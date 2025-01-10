@@ -1,4 +1,4 @@
-﻿namespace TFModFortRiseAIModule {
+﻿namespace TowerfallAi.Data {
   public static class GameModes {
     public static string Quest = "Quest";
     public static string DarkWorld = "DarkWorld";
@@ -8,5 +8,6 @@
     public static string TeamDeathmatch = "TeamDeathmatch";
     public static string Warlord = "Warlord";
     public static string Sandbox = "sandbox";
+    public static string PlayTag = "PlayTag";
   }
 }

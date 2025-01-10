@@ -8,11 +8,14 @@ using MonoMod.Utils;
 
 namespace TFModFortRiseAIModule
 {
-
   public static class MyPlayer
   {
     public static StateEntity GetState(this Player ent)
+    //public static StateEntity GetState(this Player ent)
     {
+      Logger.Info("MyPlayer.GetState");
+      //var ent = DynamicData.For(p);
+
       var aiState = new StateArcher() { type = "archer" };
 
       ExtEntity.SetAiState(ent, aiState);
@@ -32,6 +35,7 @@ namespace TFModFortRiseAIModule
       aiState.onGround = ent.OnGround;
       var dynData = DynamicData.For(ent);
       aiState.onWall = dynData.Invoke<bool>("CanWallJump", Facing.Left) || dynData.Invoke<bool>("CanWallJump", Facing.Right);
+      //aiState.onWall = ent.CanWallJump(Facing.Left) || ent.CanWallJump(Facing.Right);
       Vector2 aim = Calc.AngleToVector(ent.AimDirection, 1);
       aiState.aimDirection = new Vec2
       {

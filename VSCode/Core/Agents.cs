@@ -350,11 +350,15 @@ namespace TFModFortRiseAIModule {
     static Dictionary<Type, Func<Entity, StateEntity>> getStateFunctions = new Dictionary<Type, Func<Entity, StateEntity>>() {
       { typeof(AmaranthBoss), ExtEntity.GetState}, // Investigate
       { typeof(AmaranthShot), ExtEntity.GetState}, // Investigate
-      { typeof(ArrowTypePickup), null },
-      { typeof(Bat), null },
-      { typeof(Birdman), null },
+      { typeof(ArrowTypePickup),  (e) => MyArrowTypePickup.GetState((ArrowTypePickup)e) },
+      //{ typeof(ArrowTypePickup), null },
+      { typeof(Bat),  (e) => MyBat.GetState((Bat)e) },
+      //{ typeof(Bat), null },
+      { typeof(Birdman),  (e) => MyBirdman.GetState((Birdman)e) },
+      //{ typeof(Birdman), null },
       { typeof(BoltArrow), ExtEntity.GetStateArrow },
-      { typeof(BombArrow), null },
+      { typeof(BombArrow),  (e) => MyBombArrow.GetState((BombArrow)e) },
+      //{ typeof(BombArrow), null },
       { typeof(BombPickup), (e) => ExtEntity.GetStateItem(e, TypesItems.Bomb) },
       { typeof(BrambleArrow), ExtEntity.GetStateArrow },
       { typeof(Brambles), ExtEntity.GetState },
@@ -364,8 +368,10 @@ namespace TFModFortRiseAIModule {
       { typeof(CataclysmEye), ExtEntity.GetState }, // Investigate
       { typeof(CataclysmMissile), ExtEntity.GetState }, // Investigate
       { typeof(CataclysmShieldOrb), ExtEntity.GetState }, // Investigate
-      { typeof(CrackedPlatform), null },
-      { typeof(CrackedWall), null },
+      { typeof(CrackedPlatform),  (e) => MyCrackedPlatform.GetState((CrackedPlatform)e) },
+      //{ typeof(CrackedPlatform), null },
+      { typeof(CrackedWall),  (e) => MyCrackedWall.GetState((CrackedWall)e) },
+      //{ typeof(CrackedWall), null },
       { typeof(Crown), ExtEntity.GetState },
       { typeof(CrumbleBlock), ExtEntity.GetState }, // Investigate
       { typeof(CrumbleWall), ExtEntity.GetState }, // Investigate
@@ -381,60 +387,84 @@ namespace TFModFortRiseAIModule {
       { typeof(DreadTentacle), ExtEntity.GetState }, // Investigate
       { typeof(DrillArrow), ExtEntity.GetStateArrow },
       { typeof(Dummy), ExtEntity.GetState }, // Investigate
-      { typeof(EnemyAttack), null },
-      { typeof(EvilCrystal), null },
+      { typeof(EnemyAttack),  (e) => MyEnemyAttack.GetState((EnemyAttack)e) },
+      //{ typeof(EnemyAttack), null },
+      { typeof(EvilCrystal),  (e) => MyEvilCrystal.GetState((EvilCrystal)e) },
+      //{ typeof(EvilCrystal), null },
       { typeof(Exploder), ExtEntity.GetState }, // Investigate
       { typeof(Explosion), ExtEntity.GetState },
       { typeof(FakeWall), ExtEntity.GetState },
       { typeof(FeatherArrow), ExtEntity.GetStateArrow },
       { typeof(FlamingSkull), ExtEntity.GetState }, // Investigate
-      { typeof(FloorMiasma), null },
-      { typeof(Ghost), null }, // Investigate
+      { typeof(FloorMiasma),  (e) => MyFloorMiasma.GetState((FloorMiasma)e) },
+      //{ typeof(FloorMiasma), null },
+      { typeof(Ghost),  (e) => MyGhost.GetState((Ghost)e) }, // Investigate
+      //{ typeof(Ghost), null }, // Investigate
       { typeof(GhostPlatform), ExtEntity.GetState }, // Investigate
       { typeof(GraniteBlock), ExtEntity.GetState }, // Investigate
       { typeof(HotCoals), ExtEntity.GetState }, // Investigate
       { typeof(Ice), ExtEntity.GetState },
-      { typeof(Icicle), null },
+      { typeof(Icicle),  (e) => MyIcicle.GetState((Icicle)e) },
+      //{ typeof(Icicle), null },
       { typeof(JumpPad), ExtEntity.GetState }, // Investigate
-      { typeof(KingReaper), null },
-      { typeof(KingReaper.ReaperBeam), null },
-      { typeof(KingReaper.ReaperBomb), null },
-      { typeof(KingReaper.ReaperCrystal), null }, // Investigate
-      { typeof(Lantern), null },
+      { typeof(KingReaper),  (e) => MyKingReaper.GetState((KingReaper)e) },
+      //{ typeof(KingReaper), null },
+      { typeof(KingReaper.ReaperBeam),  (e) => MyReaperBeam.GetState((KingReaper.ReaperBeam)e) },
+      //{ typeof(KingReaper.ReaperBeam), null },
+      { typeof(KingReaper.ReaperBomb),  (e) => MyReaperBomb.GetState((KingReaper.ReaperBomb)e) },
+      //{ typeof(KingReaper.ReaperBomb), null },
+      { typeof(KingReaper.ReaperCrystal),  (e) => MyReaperCrystal.GetState((KingReaper.ReaperCrystal)e) }, // Investigate
+      //{ typeof(KingReaper.ReaperCrystal), null }, // Investigate
+      { typeof(Lantern),  (e) => MyLantern.GetState((Lantern)e) },
+      //{ typeof(Lantern), null },
       { typeof(LaserArrow), ExtEntity.GetStateArrow },
-      { typeof(Lava), null },
+      { typeof(Lava),  (e) => MyLava.GetState((Lava)e) },
+      //{ typeof(Lava), null },
       { typeof(LoopPlatform), ExtEntity.GetState }, // Investigate
-      { typeof(Miasma), null },
+      { typeof(Miasma),  (e) => MyMiasma.GetState((Miasma)e) },
+      //{ typeof(Miasma), null },
       { typeof(MirrorPickup), (e) => ExtEntity.GetStateItem(e, TypesItems.Mirror) }, // Investigate
       { typeof(Mole), ExtEntity.GetState }, // Investigate
       { typeof(MoonGlassBlock), ExtEntity.GetState }, // Investigate
       { typeof(MovingPlatform), ExtEntity.GetState }, // Investigate
       { typeof(Mud), ExtEntity.GetState }, // Investigate
-      { typeof(Orb), null },
-      { typeof(OrbPickup), null },
-      { typeof(Player), null },
-      { typeof(PlayerCorpse), null },
+      { typeof(Orb),  (e) => MyOrb.GetState((Orb)e) },
+      //{ typeof(Orb), null },
+      { typeof(OrbPickup),  (e) => MyOrbPickup.GetState((OrbPickup)e) },
+      //{ typeof(OrbPickup), null },
+      { typeof(Player),  (e) => MyPlayer.GetState((Player)e) },
+      //{ typeof(Player), null },
+      { typeof(PlayerCorpse),  (e) => MyPlayerCorpse.GetState((PlayerCorpse)e) },
+      //{ typeof(PlayerCorpse), null },
       { typeof(Prism), ExtEntity.GetState }, // Investigate
       { typeof(PrismArrow), ExtEntity.GetStateArrow },
       { typeof(ProximityBlock), ExtEntity.GetState }, // Investigate
       { typeof(PurpleArcherPortal), ExtEntity.GetState }, // Investigate
-      { typeof(QuestSpawnPortal), null }, // Investigate
+      { typeof(QuestSpawnPortal),  (e) => MyQuestSpawnPortal.GetState((QuestSpawnPortal)e) }, // Investigate
+      //{ typeof(QuestSpawnPortal), null }, // Investigate
       { typeof(SensorBlock), ExtEntity.GetState }, // Investigate
       { typeof(ShieldPickup), (e) => ExtEntity.GetStateItem(e, TypesItems.Shield) }, // Investigate
-      { typeof(ShiftBlock), null }, // Investigate
+      { typeof(ShiftBlock),  (e) => MyShiftBlock.GetState((ShiftBlock)e) }, // Investigate
+      //{ typeof(ShiftBlock), null }, // Investigate
       { typeof(ShockCircle), ExtEntity.GetState }, // Investigate
-      { typeof(Skeleton), null },
-      { typeof(Slime), null },
+      { typeof(Skeleton),  (e) => MySkeleton.GetState((Skeleton)e) },
+      //{ typeof(Skeleton), null },
+      { typeof(Slime),  (e) => MySlime.GetState((Slime)e) },
+      //{ typeof(Slime), null },
       { typeof(SpeedBootsPickup), (e) => ExtEntity.GetStateItem(e, "speedBoots") },
-      { typeof(Spikeball), null },
+      { typeof(Spikeball),  (e) => MySpikeball.GetState((Spikeball)e) },
+      //{ typeof(Spikeball), null },
       { typeof(SteelHat), ExtEntity.GetState }, // Investigate
-      { typeof(SuperBombArrow), null },
-      { typeof(SwitchBlock), null },
+      { typeof(SuperBombArrow),  (e) => MySuperBombArrow.GetState((SuperBombArrow)e) },
+      //{ typeof(SuperBombArrow), null },
+      { typeof(SwitchBlock),  (e) => MySwitchBlock.GetState((SwitchBlock)e) },
+      //{ typeof(SwitchBlock), null },
       { typeof(TechnoMage), ExtEntity.GetState },
       { typeof(TechnoMage.TechnoMissile), ExtEntity.GetState },
       { typeof(Tornado), ExtEntity.GetState }, // Investigate
       { typeof(ToyArrow), ExtEntity.GetStateArrow },
-      { typeof(TreasureChest), null },
+      { typeof(TreasureChest),  (e) => MyTreasureChest.GetState((TreasureChest)e) },
+      //{ typeof(TreasureChest), null },
       { typeof(TriggerArrow), ExtEntity.GetStateArrow },
       { typeof(WingsPickup), (e) => ExtEntity.GetStateItem(e, TypesItems.Wings) },
       { typeof(WoodenHat), ExtEntity.GetState }, // Investigate

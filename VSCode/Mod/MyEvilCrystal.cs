@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using TowerFall;
 
 namespace TFModFortRiseAIModule {
-  public static class ModEvilCrystal {
+  public static class MyEvilCrystal {
     public static StateEntity GetState(this EvilCrystal ent) {
       var aiState = new StateSubType { type = "evilCrystal" };
       ExtEntity.SetAiState(ent, aiState);
