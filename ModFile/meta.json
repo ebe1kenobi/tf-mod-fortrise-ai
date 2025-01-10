@@ -1,0 +1,7 @@
+{
+	"name": "AI",
+	"version": "0.0.1",
+	"author": "ebe1.kenobi",
+	"description": "port of AI mod python",
+	"dll": "TFModFortRiseAI.dll"
+}
