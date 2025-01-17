@@ -1,2 +1,5 @@
 release
 release*.zip
+
+__pycache__
+*.bak
