@@ -23,16 +23,29 @@ class Agent:
     self.players = []
     # self.attack_achers = attack_archers
 
+  def run(self):
+    while True:
+      game_state = self.connection.read_json()
+      # logging.info('towerfall.run : agent.act')
+      self.act(game_state)    
+
   def act(self, game_state: Mapping[str, Any]):
     '''
     Handles a game message.
     '''
     # logging.info('agent.act')
 
+    if game_state['type'] == 'notplaying':
+      logging.info('game_state.type = ' + str(game_state['type']))
+      # 'notplaying' is sent every time a match series starts for an agents not selected to play
+      # Acknowledge the init message.
+      self.connection.send_json(dict(type='result', success=True, id = game_state['id']))
+      return True    
+
     # There are three main types to handle, 'init', 'scenario' and 'update'.
     # Check 'type' to handle each accordingly.
     if game_state['type'] == 'init':
-      # logging.info('game_state.type = ' + str(game_state['type']))
+      logging.info('game_state.type = ' + str(game_state['type']))
 
       # 'init' is sent every time a match series starts. It contains information about the players and teams.
       # The seed is based on the bot index so each bots acts differently.
@@ -45,7 +58,7 @@ class Agent:
 
     # Add game mode # AiMod.Config.mode == GameModes.Quest
     if game_state['type'] == 'scenario': 
-      # logging.info('game_state.type = ' + str(game_state['type']))
+      logging.info('game_state.type = ' + str(game_state['type']))
       # 'scenario' informs your bot about the current state of the ground. Store this information
       # to use in all subsequent loops. (This example bot doesn't use the shape of the scenario)
       self.state_scenario = game_state
@@ -57,7 +70,7 @@ class Agent:
       return True
 
     if game_state['type'] == 'update':
-      # logging.info('game_state.type = ' + str(game_state['type']))
+      logging.info('game_state.type = ' + str(game_state['type']))
       # 'update' informs the state of entities in the map (players, arrows, enemies, etc).
       self.state_update = game_state
 
@@ -115,3 +128,9 @@ class Agent:
   def has_floor(self, my_state):
     # logging.info('agent.has_floor')
     return my_state['onGround']
+
+  def is_playtag_on(self):
+    return self.my_state['playTagOn']
+
+  def is_tag(self):
+    return self.my_state['playTag']      

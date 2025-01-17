@@ -14,6 +14,7 @@ namespace TFModFortRiseAIModule {
       var dynData = DynamicData.For(ent);
       state.timeLeft = (float)Math.Ceiling(((Alarm)dynData.Get("explodeAlarm")).FramesLeft);
       //state.timeLeft = (float)Math.Ceiling(ent.explodeAlarm.FramesLeft);
+      dynData.Dispose();
       return state;
     }
   }

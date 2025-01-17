@@ -11,6 +11,7 @@ namespace TFModFortRiseAIModule {
       ExtEntity.SetAiState(ent, aiState);
       var dynData = DynamicData.For(ent);
       aiState.falling = (bool)dynData.Get("falling");
+      dynData.Dispose();
       return aiState;
     }
   }

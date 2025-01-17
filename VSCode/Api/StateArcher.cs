@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
-namespace TowerfallAi.Api {
+namespace TFModFortRiseAIModule
+{
   public class StateArcher : StateEntity {
     public int playerIndex;
     public bool shield;

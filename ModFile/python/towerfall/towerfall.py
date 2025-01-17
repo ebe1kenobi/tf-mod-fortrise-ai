@@ -4,6 +4,7 @@ import os
 import random
 import signal
 import time
+import threading
 from io import TextIOWrapper
 from typing import Any, Callable, Dict, List, Mapping, Optional
 
@@ -49,7 +50,8 @@ class Towerfall:
     self.towerfall_path = towerfall_path
     self.towerfall_path_exe = os.path.join(self.towerfall_path, 'TowerFall.exe')
     self.pool_name = 'default'
-    self.pool_path = os.path.join(self.towerfall_path, 'aimod', 'pools', self.pool_name)
+    self.pool_path = os.path.join(self.towerfall_path, 'TFModFortRiseAIModule', 'pools', self.pool_name)
+    logging.info(self.pool_path)
     self.timeout = timeout
     self.verbose = verbose
     tries = 0
@@ -65,7 +67,7 @@ class Towerfall:
         if tries > 3:
           raise TowerfallError('Could not config a Towerfall process.')
         tries += 1
-
+      
 
   def run(self):
     # logging.info('Towerfall.logging')
@@ -90,13 +92,28 @@ class Towerfall:
         agents.append(SimpleAgentLevel0(connections[i]))
       i += 1
 
-    while True:
+    ##################################################
+    # EAch agent is a thread (game still freeze sometime when playing)
+    ##################################################
+    # threads = []
+    # for agent in agents:
+    #   thread = threading.Thread(target=agent.run)
+    #   threads.append(thread)
+    #   thread.start()
+
+    # for thread in threads:
+    #   thread.join()
+
+    ##################################################
+    # To use training comment the thread above and decomment the code below :
+    ##################################################
+    while True: #TODO : use thread and each agent read from its connection : each agent -> thread
       # Read the state of the game then replies with an action.
       for connection, agent in zip(connections, agents):
         # logging.info('towerfall.run : connection.read_json')
         game_state = connection.read_json()
         # logging.info('towerfall.run : agent.act')
-        agent.act(game_state)
+        agent.act(game_state)    
 
   def join(self, timeout: float = 2, verbose: int = 0) -> Connection:
     '''
@@ -148,7 +165,7 @@ class Towerfall:
       config = self.config
 
     # logging.info('TowerFall.send_config')
-
+  
     response = self.send_request_json(dict(type='config', config=config))
     # logging.info('response = '+ str(response))
     if response['type'] != 'result':
@@ -223,7 +240,7 @@ class Towerfall:
     return metadata['port']
 
   def _find_compatible_metadata(self) -> Optional[Mapping[str, Any]]:
-    # logging.info("TowerFall._find_compatible_metadata")
+    logging.info("TowerFall._find_compatible_metadata")
     if not os.path.exists(self.pool_path):
       return None
     dirs = list(os.listdir(self.pool_path))
@@ -250,7 +267,7 @@ class Towerfall:
 
   @staticmethod
   def _load_metadata(file: TextIOWrapper) -> Mapping[str, Any]:
-    # logging.info("TowerFall._load_metadata")
+    logging.info("TowerFall._load_metadata")
     metadata = json.load(file)
     if 'port' not in metadata:
       raise ValueError('Port not found in metadata.')

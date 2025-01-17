@@ -29,7 +29,7 @@ namespace TFModFortRiseAIModule {
     public int Port { get; private set; }
 
     public ConnectionDispatcher(string poolName) {
-      this.poolPath = Path.Combine(AiMod.BaseDirectory, pools_dir, poolName);
+      this.poolPath = Path.Combine(TFModFortRiseAIModule.BaseDirectory, pools_dir, poolName);
       server = new Server(OnConnection, () => { throw new Exception("Server closed"); });
       remoteConnections = new List<RemoteConnection>();
       Port = server.Start();

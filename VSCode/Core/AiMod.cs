@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
@@ -10,39 +8,33 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TowerFall;
-using TowerFall.Editor;
-//TFModFortRiseAIModule.Common;
-//TFModFortRiseAIModule.Data;
-using static TowerFall.MatchSettings;
 
 namespace TFModFortRiseAIModule {
   /// <summary>
   /// Entry point for the modifications in the game.
   /// </summary>
   public static class AiMod {
-
     // Original Mods
-    public const string TFModFortRiseAIModuleSource = "https://github.com/ebe1kenobi/tf-mod-fortrise-ai";
-    public const string TFModFortRiseAIModuleVersion = "v0.1";
+    public const string TFModAiPythonSource = "https://github.com/ebe1kenobi/tf-mod-ai-python";
+    public const string TFModAiPythonVersion = "v0.2";
     // Fork Mods
     public const string ModAiSource = "https://github.com/TowerfallAi/towerfall-ai";
-    public const string ModAiVersion = "v0.1.1";
+    public const string ModAiVersion = "v0.1.1"; 
 
     private const string poolName = "default";
-    public const string BaseDirectory = "aimod";
     private const string defaultConfigName = "config.json";
 
     public static bool AgentConnected = false;
+    public static AgentConnection[] agents = new AgentConnection[TFGame.Players.Length];
 
-    // If this is set to false, this mod should do no effect.
-    public static bool ModAIEnabled { get; set;}
-    public static bool ModAITraining { get; private set;}
+    public static bool ModAIEnabled { get;  set;}
+    public static bool ModAITraining { get;  set;}
 
     public static readonly Random Random = new Random((int)DateTime.UtcNow.Ticks);
 
     public static readonly TimeSpan DefaultAgentTimeout = new TimeSpan(0, 0, 10);
 
-    public static string ConfigPath = Util.PathCombine(BaseDirectory, defaultConfigName);
+    public static string ConfigPath = Util.PathCombine(TFModFortRiseAIModule.BaseDirectory, defaultConfigName);
 
     public static MatchConfig Config { get; private set; }
 
@@ -62,22 +54,20 @@ namespace TFModFortRiseAIModule {
     private static ResetOperation resetOperation;
     private static CancellationTokenSource ctsSession = new CancellationTokenSource();
 
-    public static GameTime gameTime;
-
-    static Stopwatch gameTimeWatch;
+    public static Stopwatch gameTimeWatch;
     private static TimeSpan totalGameTime = new TimeSpan();
     private static long totalFrame = 0;
 
     private static readonly Stopwatch fpsWatch = new Stopwatch();
 
-    private static bool loggedScreenSize;
+    public static bool loggedScreenSize;
 
     private static bool sessionEnded;
 
     static Mutex loadContentMutex = new Mutex(false, "Towerfall_loadContent");
 
     static bool rematch;
-    static TimeSpan logTimeInterval = new TimeSpan(0, 1, 0);
+    public static TimeSpan logTimeInterval = new TimeSpan(0, 1, 0);
     
     public class ReconfigOperation {
       public MatchConfig Config { get; set; }
@@ -89,22 +79,25 @@ namespace TFModFortRiseAIModule {
     }
 
     public static void ParseArgs(string[] args) {
-      Logger.Info("ParseArgs");
-
+      Logger.Info("AIMod.ParseArgs");
+      ModAIEnabled = true;
+      ModAITraining = false;
+ 
       for (int i = 0; i < args.Length; i++)
       {
-        Logger.Info("args[i] = " + args[i]);
-
-        //if (args[i] == "--aimod")
+        //if (args[i] == "--noaimod")
         //{
-        ModAIEnabled = true;
+        //  ModAIEnabled = false;
         //}
         if (args[i] == "--aimodtraining")
         {
           ModAITraining = true;
-          //ModAIEnabled = true;
         }
       }
+      //force ModAIEnabled if training on
+      //if (ModAITraining) {
+      //  ModAIEnabled = true;
+      //}
     }
 
     public static void LoadConfigFromPath() {
@@ -131,9 +124,6 @@ namespace TFModFortRiseAIModule {
     public static void PostGameInitialize() {
       gameTimeWatch = Stopwatch.StartNew();
 
-      //Util.CreateDirectory(BaseDirectory);
-      //Logger.Init(BaseDirectory);
-      Logger.Info($"Mod version: {TFModFortRiseAIModuleVersion}. ModAIEnabled: {ModAIEnabled}.");
 
       Agents.Init();
       ctsSession = new CancellationTokenSource();
@@ -153,61 +143,6 @@ namespace TFModFortRiseAIModule {
 
       Logger.Info("Post Game Initialize.");
     }
-    
-    public static void Update(On.TowerFall.TFGame.orig_Update orig, global::TowerFall.TFGame self, GameTime gameTime) {
-    //public static void Update(Action<GameTime> originalUpdate) {
-      int fps = 0;
-      if (Config?.fps > 0)
-      {
-        fps = IsMatchRunning() ? Config.fps : 10;
-        fpsWatch.Stop();
-        long ticks = 10000000L / fps;
-        if (fpsWatch.ElapsedTicks < ticks)
-        {
-          Thread.Sleep((int)(ticks - fpsWatch.ElapsedTicks) / 10000);
-        }
-        fpsWatch.Reset();
-        fpsWatch.Restart();
-      }
-
-      if (!ConnectionDispatcher.IsRunning) {
-        throw new Exception("ConnectionDispatcher stopped running");
-      }
-
-      if (!loggedScreenSize) {
-        Logger.Info("Screen: {0} x {1}, {2}".Format(
-          TFGame.Instance.Screen.RenderTarget.Width,
-          TFGame.Instance.Screen.RenderTarget.Height,
-          TFGame.Instance.Screen.RenderTarget.Format));
-        loggedScreenSize = true;
-      }
-
-      try {
-        if (!AgentConnected || PreUpdate()) {
-          if (fps > 0)
-          {
-            orig(self, GetGameTime());
-          }
-          else
-          {
-            orig(self, gameTime);
-          }
-        }
-      } catch (AggregateException aggregateException) {
-        foreach (var innerException in aggregateException.Flatten().InnerExceptions) {
-          HandleFailure(innerException);
-        }
-      } catch (Exception ex) {
-        HandleFailure(ex);
-      }
-
-      if (gameTimeWatch.ElapsedMilliseconds > logTimeInterval.TotalMilliseconds)
-      {
-        LogGameTime();
-        gameTimeWatch.Restart();
-      }
-    }
-
     public static void HandleFailure(Exception ex) {
       if (ex is SocketException) {
         Logger.Info($"Connection error. Session will stop and wait for another config. Exception:\n  {ex}");
@@ -277,6 +212,7 @@ namespace TFModFortRiseAIModule {
 
     private static void StartNewSession() {
       Logger.Info("Starting a new session.");
+      Logger.Info("Create match settings.");
       CreateMatchSettings();
       Session session = new Session(matchSettings);
       session.QuestTestWave = Config.skipWaves;
@@ -287,7 +223,8 @@ namespace TFModFortRiseAIModule {
       Agents.SessionRestarted();
     }
 
-    public static GameTime GetGameTime() {
+    public static GameTime GetGameTime()
+    {
       return new GameTime(totalGameTime, ellapsedGameTime);
     }
 
@@ -323,7 +260,7 @@ namespace TFModFortRiseAIModule {
         }
 
         if (resetOperation != null) {
-          Agents.Reset(resetOperation.Entities, ctsSession.Token);
+          Agents.Reset(resetOperation.Entities, ctsSession.Token); 
           resetOperation = null;
         }
       }
@@ -362,7 +299,8 @@ namespace TFModFortRiseAIModule {
     }
 
     private static LevelSystem getLevel(MatchConfig Config) {
-      if (Config.mode == GameModes.LastManStanding || Config.mode == GameModes.HeadHunters || Config.mode == GameModes.TeamDeathmatch)
+      if (Config.mode == GameModes.LastManStanding || Config.mode == GameModes.HeadHunters
+          || Config.mode == GameModes.TeamDeathmatch || Config.mode == GameModes.PlayTag)
       {
         if (Config.randomLevel)
         {
@@ -377,7 +315,7 @@ namespace TFModFortRiseAIModule {
         {
           return GameData.VersusTowers[1].GetLevelSystem();
         }
-        }
+      }
       else if(Config.mode == GameModes.Quest)
       {
         if (Config.randomLevel)
@@ -425,8 +363,6 @@ namespace TFModFortRiseAIModule {
           return GameData.TrialsLevels[1,1].GetLevelSystem();
         }
       }
-      //else if (Config.mode == GameModes.Warlord) //TODO
-      //}
       else //default QuestLevels
       {
           return GameData.QuestLevels[0].GetLevelSystem();
@@ -434,7 +370,9 @@ namespace TFModFortRiseAIModule {
     }
 
     private static void CreateMatchSettings() {
-      if (!IsNoConfig) {
+      Logger.Info("CreateMatchSettings.");
+      if (!IsNoConfig)
+      {
         Config = JsonConvert.DeserializeObject<MatchConfig>(File.ReadAllText(ConfigPath));
       }
       MatchSettings.MatchLengths matchLength;
@@ -473,6 +411,12 @@ namespace TFModFortRiseAIModule {
         matchSettings = new MatchSettings(levelSystem, Modes.LastManStanding, matchLength);
         matchSettings.Variants.TournamentRules();
       }
+      //else if (Config.mode == GameModes.PlayTag)
+      //{
+      //  Logger.Info("Configuring PlayTag mode.");
+      //  matchSettings = new MatchSettings(levelSystem, Modes.PlayTag, matchLength);
+      //  matchSettings.Variants.TournamentRules();
+      //}
       else if (Config.mode == GameModes.Quest)
       {
         Logger.Info("Configuring Quest mode.");
@@ -522,31 +466,27 @@ namespace TFModFortRiseAIModule {
       int indexRemote = Agents.CountHumanConnections(Config.agents);
       int indexForTeam = 0;
       for (int i = 0; i < Config.agents.Count; i++) {
-        Logger.Info("team : i " + i);
-
         var agent = Config.agents[i];
         // when human in agent config, the distribution is erronous when Teams are involved !
         // because the human joystick are always at the beginning and the remote at the end
         // if human, we need to calculate the right index Like in TFGame.PlayerInput
         if (agent.type == "human")
         {
-          Logger.Info("human : indexHuman " + indexHuman); //TODO delete comment
-          Logger.Info("human : indexForTeam " + indexHuman);
           indexForTeam = indexHuman;
           indexHuman++;
         }
         else
         {
-          Logger.Info("remote : indexRemote " + indexRemote);
-          Logger.Info("remote : indexForTeam " + indexHuman);
           indexForTeam = indexRemote;
           indexRemote++;
         }
 
+        Logger.Info("Set players playing");
+
         TFGame.Players[indexForTeam] = true;
+        TFGame.PlayerInputs[indexForTeam] = AiMod.agents[indexForTeam];
         TFGame.Characters[indexForTeam] = agent.GetArcherIndex();
         TFGame.AltSelect[indexForTeam] = agent.GetArcherType();
-        Logger.Info("team " + i + " type : " + agent.type + " :  agent.GetTeam() " + agent.GetTeam().ToString());
 
         matchSettings.Teams[indexForTeam] = agent.GetTeam();
       }
@@ -568,10 +508,6 @@ namespace TFModFortRiseAIModule {
           {
             throw new ConfigException("No agent in config, starting normal game.");
           }
-          //if (config.fps <= 0)
-          //{
-          //  throw new ConfigException("Fps value invalid");
-          //}
           if (config.level <= 0)
           {
             throw new ConfigException("Invalid level {0}.");
@@ -583,15 +519,10 @@ namespace TFModFortRiseAIModule {
         case "Quest":
         case "DarkWorld":
         case "Trials":
-          //case "Warlord": //TODO
+        case "PlayTag":
           //TODO
           //skipWaves
           //solids
-
-          //if (config.fps <= 0)
-          //{
-          //  throw new ConfigException("Fps value invalid");
-          //}
 
           if (config.agentTimeout == null)
           {
@@ -599,10 +530,13 @@ namespace TFModFortRiseAIModule {
             config.agentTimeout = DefaultAgentTimeout;
           }
 
-          if (config.agents.Count > 4)
-          //if (AiMod.Mod8PEnabled && config.agents.Count > 8)
+          if (config.agents.Count > 8)
           {
-            throw new ConfigException("Too many agents. Only 4 players are supported.");
+            throw new ConfigException("Too many agents. Only 8 players are supported.");
+          }
+          if (TFGame.Players.Length > 4 && AiMod.ModAITraining && config.agents.Count > 6 && config.mode == "TeamDeathmatch")
+          {
+            throw new ConfigException("Too many agents. Only 6 players are supported for TeamDeathmatch.");
           }
 
           //If not training, the matchsettings will be set in the game interface
@@ -622,7 +556,8 @@ namespace TFModFortRiseAIModule {
             }
           }
 
-          if ((config.mode == "LastManStanding" || config.mode == "HeadHunters" || config.mode == "TeamDeathmatch") &&
+          if ((config.mode == "LastManStanding" || config.mode == "HeadHunters"
+            || config.mode == "TeamDeathmatch" || config.mode == "PlayTag") &&
                 config.matchLengths != "Instant" && config.matchLengths != "Quick" &&
                 config.matchLengths != "Standard" && config.matchLengths != "Epic") {
             throw new ConfigException("matchLengths invalid.");
@@ -658,8 +593,10 @@ namespace TFModFortRiseAIModule {
       }
     }
 
-    private static void LogGameTime() {
+    public static void LogGameTime() {
       Logger.Info("{0}s, {1} frames".Format((long)GetGameTime().TotalGameTime.TotalSeconds, totalFrame));
     }
+
+
   }
 }

@@ -11,10 +11,11 @@ namespace TFModFortRiseAIModule {
       ExtEntity.SetAiState(ent, aiState);
       aiState.state = ent.State.ToString().FirstLower();
 
-      var treasureChest = DynamicData.For(ent);
-      aiState.chestType = treasureChest.Get("type").ToString().FirstLower();
+      var dynData = DynamicData.For(ent);
+      aiState.chestType = dynData.Get("type").ToString().FirstLower();
       //aiState.chestType = ent.type.ToString().FirstLower();
 
+      dynData.Dispose();
       return aiState;
     }
   }

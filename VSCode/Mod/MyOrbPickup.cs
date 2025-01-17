@@ -11,6 +11,7 @@ namespace TFModFortRiseAIModule {
       ExtEntity.SetAiState(ent, aiState);
       var dynData = DynamicData.For(ent);
       aiState.itemType = "orb" + dynData.Get("orbType").ToString();
+      dynData.Dispose();
       return aiState;
     }
   }

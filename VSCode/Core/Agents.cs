@@ -8,7 +8,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TowerFall;
 
-namespace TFModFortRiseAIModule {
+namespace TFModFortRiseAIModule
+{
   /// <summary>
   /// Handles serialization of the game state and the communication with the agents.
   /// </summary>
@@ -20,6 +21,7 @@ namespace TFModFortRiseAIModule {
     static int frame;
     static bool levelLoaded;
     static bool scenarioSent;
+    public const string InputName = "TFModFortRiseAIModule.AgentConnectionRemote";
 
     public static void Init() { }
 
@@ -62,70 +64,72 @@ namespace TFModFortRiseAIModule {
         int numberOfSlotOpen = 0;
 
 
-        if (AiMod.ModAITraining)
-        {
+        //if (AiMod.ModAITraining)
+        //{
           //for training, we count only the human from the config
-          numberOfSlotOpen = TFGame.PlayerInputs.Length - nbHuman;
-        }
-        else
-        {
-          //for the normal game, we count the number of joystick connected
-          for (int i = 0; i < TFGame.PlayerInputs.Length; i++)
-          {
-            // In training mode, don't count the joystick connected, all slot are open
-            // don't count the keyboard
-            if (TFGame.PlayerInputs[i] is null || TFGame.PlayerInputs[i] is KeyboardInput)
-            {
-              numberOfSlotOpen++;
-              continue;
-            }
-          }
-      }
+          numberOfSlotOpen = TFGame.PlayerInputs.Length; //todo getplayer 8 or 4
+        //}
+      //  else
+      //  {
+      //    numberOfSlotOpen = TFGame.PlayerInputs.Length; //todo getplayer 8 or 4
+      //                                                   //for the normal game, we count the number of joystick connected
+      //}
       
         return numberOfSlotOpen;
     }
-        
-    public static int PrepareAgentConnections(List<AgentConfig> agentConfigs) {
-      Logger.Info("PrepareAgentConnections");
+
+    public static int PrepareAgentConnections(List<AgentConfig> agentConfigs)
+    {
       DisconnectAllAgents();
       int indexAgent;
       int nbHuman = CountHumanConnections(agentConfigs);
       int nbSlotOpen = getNumberOfSlotOpen(nbHuman);
 
-      if (AiMod.ModAITraining) {
+      if (AiMod.ModAITraining)
+      {
         indexAgent = nbHuman;
-      } else {
+      }
+      else
+      {
         indexAgent = TFGame.PlayerInputs.Length - nbSlotOpen;
       }
-      Logger.Info("indexAgent = " + indexAgent);
-      Logger.Info("nbHuman = " + nbHuman);
-      Logger.Info("nbSlotOpen = " + nbSlotOpen);
+      //int maxPlayer = 4;
+      //if (TF8PlayerMod.TF8PlayerMod.Mod8PEnabled)
+      //{
+      //  maxPlayer = 8;
+      //  TFGame.Players = new bool[maxPlayer];
+      //}
 
-      int maxPlayer = 4;
-
-      for (int i = 0; i < agentConfigs.Count && i < TFGame.PlayerInputs.Length; i++) {
+      for (int i = 0; i < agentConfigs.Count && i < TFGame.PlayerInputs.Length; i++)
+      {
         AgentConfig agentConfig = agentConfigs[i];
-        Logger.Info("i = " + i);
-        Logger.Info("indexAgent = " + indexAgent);
-        Logger.Info("agentConfig = " + agentConfig);
 
-        if (agentConfig.type == AgentConfig.Type.Human) {
+        if (agentConfig.type == AgentConfig.Type.Human)
+        {
           Logger.Info("Agent {0} is human".Format(i));
           AgentConnections.Add(null);
           continue;
         }
         AgentConnection agentConnection;
-        if (agentConfig.type == AgentConfig.Type.Remote) {
+        if (agentConfig.type == AgentConfig.Type.Remote)
+        {
           Logger.Info("Registering remote connection slot for agent {0}.".Format(indexAgent));
           AgentConnectionRemote remoteConnection = new AgentConnectionRemote(indexAgent);
           remoteConnections.Add(remoteConnection);
           agentConnection = remoteConnection;
-        } else {
+        }
+        else
+        {
           throw new Exception("Unsupported agent type {0}".Format());
         }
 
         AgentConnections.Add(agentConnection);
-        TFGame.PlayerInputs[indexAgent] = agentConnection;
+        TFModFortRiseAIModule.nbPlayerType[indexAgent]++;
+        AiMod.agents[indexAgent] = agentConnection;
+        if (TFModFortRiseAIModule.currentPlayerType[indexAgent] == PlayerType.NAIMod)
+        {
+          TFModFortRiseAIModule.currentPlayerType[indexAgent] = PlayerType.AiMod;
+        }
         indexAgent++;
       }
 
@@ -133,8 +137,6 @@ namespace TFModFortRiseAIModule {
     }
 
     public static void AssignRemoteConnections(List<RemoteConnection> connections, CancellationToken cancelAgentCommunication) {
-      Logger.Info("AssignRemoteConnections");
-
       if (connections.Count != remoteConnections.Count) {
         throw new Exception($"Expected {remoteConnections.Count} connections. Got {connections.Count}");
       }
@@ -147,19 +149,12 @@ namespace TFModFortRiseAIModule {
     }
 
     public static void NotifyLevelLoad(Level level) {
-      Logger.Info("Level reloaded");
       scenarioSent = false;
       StateScenario stateScenario = new StateScenario();
 
       int xSize = level.Tiles.Grid.CellsX;
       int ySize = level.Tiles.Grid.CellsY;
 
-      //public static MatchSettings VersusMatchSettings;
-      //public static MatchSettings TrialsMatchSettings;
-      //public static MatchSettings QuestMatchSettings;
-      //public static MatchSettings DarkWorldMatchSettings;
-      //public static MatchSettings CurrentMatchSettings;
-    
       stateScenario.mode = AiMod.ModAITraining ? AiMod.Config.mode : MainMenu.CurrentMatchSettings.Mode.ToString();
       stateScenario.grid = new int[xSize, ySize];
 
@@ -170,10 +165,11 @@ namespace TFModFortRiseAIModule {
       }
 
       scenarioMessage = JsonConvert.SerializeObject(stateScenario);
+
       levelLoaded = true;
     }
 
-    static void SendScenario() {
+    static void SendScenario(Level level) {
       Logger.Info("Send scenario to agents.");
 
       List<Task> tasks = new List<Task>();
@@ -182,13 +178,23 @@ namespace TFModFortRiseAIModule {
       for (int i = 0; i < AgentConnections.Count; i++) {
         var connection = AgentConnections[i];
         if (connection == null) continue;
-        string initMessage = JsonConvert.SerializeObject(new StateInit { index = connection.index });
-        Logger.Info("Sending stateInit to agent {0}.".Format(connection.index));
-        connection.Send(initMessage, frame);
-
-        var task = Task.Run(async () => {
+        if (!InputName.Equals(TFGame.PlayerInputs[i].GetType().ToString()))
+        {
+          string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index });
+          Logger.Info("Sending StateNotPlaying to agent {0}.".Format(connection.index));
+          connection.Send(notPlayingMessage, frame);
+        }
+        else
+        {
+          string initMessage = JsonConvert.SerializeObject(new StateInit { index = connection.index });
+          Logger.Info("Sending stateInit to agent {0}.".Format(connection.index));
+          connection.Send(initMessage, frame);
+        }
+        var task = Task.Run(async () =>
+        {
           Message reply = await connection.ReceiveAsync(AiMod.Config.agentTimeout, cancelAgentCommunication);
-          if (!reply.success) {
+          if (!reply.success)
+          {
             throw new Exception("Agent didn't ack state init: {0}".Format(reply.message));
           }
         });
@@ -201,9 +207,17 @@ namespace TFModFortRiseAIModule {
       for (int i = 0; i < AgentConnections.Count; i++) {
         var connection = AgentConnections[i];
         if (connection == null) continue;
-        Logger.Info("Notify level load to agent {0}.".Format(connection.index));
-        connection.Send(scenarioMessage, frame);
-
+        if (!InputName.Equals(TFGame.PlayerInputs[i].GetType().ToString()))
+        {
+          string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index });
+          Logger.Info("Sending StateNotPlaying to agent {0}.".Format(connection.index));
+          connection.Send(notPlayingMessage, frame);
+        }
+        else
+        {
+          Logger.Info("Notify level load to agent {0}.".Format(connection.index));
+          connection.Send(scenarioMessage, frame);
+        }
         var task = Task.Run(async () => {
           Message reply = await connection.ReceiveAsync(AiMod.Config.agentTimeout, cancelAgentCommunication);
           if (!reply.success) {
@@ -304,29 +318,39 @@ namespace TFModFortRiseAIModule {
       if (!levelLoaded) return;
 
       if (!scenarioSent) {
-        Logger.Info("Level not notified yet");
-        SendScenario();
+
+        SendScenario(level);
       }
 
       if (frame == 0) {
+
         RecreateEntities(level);
       }
 
       RefreshStateUpdate(level);
       stateUpdate.dt = Engine.TimeMult;
       stateUpdate.id = frame;
-      
+
       string serializedStateUpdate = JsonConvert.SerializeObject(stateUpdate);
 
       draws.Clear();
       List<Task> tasks = new List<Task>();
 
-    // Start receiving all messages
-    for (int i = 0; i< AgentConnections.Count; i++) {
+      // Start receiving all messages
+      for (int i = 0; i< AgentConnections.Count; i++) {
+
         AgentConnection connection = AgentConnections[i];
         if (connection == null) continue;
 
-        connection.Send(serializedStateUpdate, frame);
+        if (!InputName.Equals(TFGame.PlayerInputs[i].GetType().ToString()))
+        {
+          string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index, id = stateUpdate.id });
+          connection.Send(notPlayingMessage, frame);
+        }
+        else
+        {
+          connection.Send(serializedStateUpdate, frame);
+        }
         var task = Task.Run(async () => {
           Message message = await connection.ReceiveAsync(AiMod.Config.agentTimeout, cancelAgentCommunication);
           if (message.id != stateUpdate.id) {
@@ -341,9 +365,7 @@ namespace TFModFortRiseAIModule {
         });
         tasks.Add(task);
       }
-
       WaitAllAndClear(tasks);
-      
       frame++;
     }
 
@@ -356,9 +378,11 @@ namespace TFModFortRiseAIModule {
       //{ typeof(Bat), null },
       { typeof(Birdman),  (e) => MyBirdman.GetState((Birdman)e) },
       //{ typeof(Birdman), null },
+
       { typeof(BoltArrow), ExtEntity.GetStateArrow },
       { typeof(BombArrow),  (e) => MyBombArrow.GetState((BombArrow)e) },
       //{ typeof(BombArrow), null },
+
       { typeof(BombPickup), (e) => ExtEntity.GetStateItem(e, TypesItems.Bomb) },
       { typeof(BrambleArrow), ExtEntity.GetStateArrow },
       { typeof(Brambles), ExtEntity.GetState },
@@ -372,6 +396,7 @@ namespace TFModFortRiseAIModule {
       //{ typeof(CrackedPlatform), null },
       { typeof(CrackedWall),  (e) => MyCrackedWall.GetState((CrackedWall)e) },
       //{ typeof(CrackedWall), null },
+
       { typeof(Crown), ExtEntity.GetState },
       { typeof(CrumbleBlock), ExtEntity.GetState }, // Investigate
       { typeof(CrumbleWall), ExtEntity.GetState }, // Investigate
@@ -391,6 +416,7 @@ namespace TFModFortRiseAIModule {
       //{ typeof(EnemyAttack), null },
       { typeof(EvilCrystal),  (e) => MyEvilCrystal.GetState((EvilCrystal)e) },
       //{ typeof(EvilCrystal), null },
+
       { typeof(Exploder), ExtEntity.GetState }, // Investigate
       { typeof(Explosion), ExtEntity.GetState },
       { typeof(FakeWall), ExtEntity.GetState },
@@ -400,12 +426,14 @@ namespace TFModFortRiseAIModule {
       //{ typeof(FloorMiasma), null },
       { typeof(Ghost),  (e) => MyGhost.GetState((Ghost)e) }, // Investigate
       //{ typeof(Ghost), null }, // Investigate
+
       { typeof(GhostPlatform), ExtEntity.GetState }, // Investigate
       { typeof(GraniteBlock), ExtEntity.GetState }, // Investigate
       { typeof(HotCoals), ExtEntity.GetState }, // Investigate
       { typeof(Ice), ExtEntity.GetState },
       { typeof(Icicle),  (e) => MyIcicle.GetState((Icicle)e) },
       //{ typeof(Icicle), null },
+
       { typeof(JumpPad), ExtEntity.GetState }, // Investigate
       { typeof(KingReaper),  (e) => MyKingReaper.GetState((KingReaper)e) },
       //{ typeof(KingReaper), null },
@@ -417,17 +445,19 @@ namespace TFModFortRiseAIModule {
       //{ typeof(KingReaper.ReaperCrystal), null }, // Investigate
       { typeof(Lantern),  (e) => MyLantern.GetState((Lantern)e) },
       //{ typeof(Lantern), null },
+
       { typeof(LaserArrow), ExtEntity.GetStateArrow },
       { typeof(Lava),  (e) => MyLava.GetState((Lava)e) },
       //{ typeof(Lava), null },
+
       { typeof(LoopPlatform), ExtEntity.GetState }, // Investigate
       { typeof(Miasma),  (e) => MyMiasma.GetState((Miasma)e) },
       //{ typeof(Miasma), null },
+
       { typeof(MirrorPickup), (e) => ExtEntity.GetStateItem(e, TypesItems.Mirror) }, // Investigate
       { typeof(Mole), ExtEntity.GetState }, // Investigate
       { typeof(MoonGlassBlock), ExtEntity.GetState }, // Investigate
       { typeof(MovingPlatform), ExtEntity.GetState }, // Investigate
-      { typeof(Mud), ExtEntity.GetState }, // Investigate
       { typeof(Orb),  (e) => MyOrb.GetState((Orb)e) },
       //{ typeof(Orb), null },
       { typeof(OrbPickup),  (e) => MyOrbPickup.GetState((OrbPickup)e) },
@@ -436,35 +466,42 @@ namespace TFModFortRiseAIModule {
       //{ typeof(Player), null },
       { typeof(PlayerCorpse),  (e) => MyPlayerCorpse.GetState((PlayerCorpse)e) },
       //{ typeof(PlayerCorpse), null },
+
       { typeof(Prism), ExtEntity.GetState }, // Investigate
       { typeof(PrismArrow), ExtEntity.GetStateArrow },
       { typeof(ProximityBlock), ExtEntity.GetState }, // Investigate
       { typeof(PurpleArcherPortal), ExtEntity.GetState }, // Investigate
       { typeof(QuestSpawnPortal),  (e) => MyQuestSpawnPortal.GetState((QuestSpawnPortal)e) }, // Investigate
       //{ typeof(QuestSpawnPortal), null }, // Investigate
+
       { typeof(SensorBlock), ExtEntity.GetState }, // Investigate
       { typeof(ShieldPickup), (e) => ExtEntity.GetStateItem(e, TypesItems.Shield) }, // Investigate
       { typeof(ShiftBlock),  (e) => MyShiftBlock.GetState((ShiftBlock)e) }, // Investigate
       //{ typeof(ShiftBlock), null }, // Investigate
+
       { typeof(ShockCircle), ExtEntity.GetState }, // Investigate
       { typeof(Skeleton),  (e) => MySkeleton.GetState((Skeleton)e) },
       //{ typeof(Skeleton), null },
       { typeof(Slime),  (e) => MySlime.GetState((Slime)e) },
       //{ typeof(Slime), null },
+
       { typeof(SpeedBootsPickup), (e) => ExtEntity.GetStateItem(e, "speedBoots") },
       { typeof(Spikeball),  (e) => MySpikeball.GetState((Spikeball)e) },
       //{ typeof(Spikeball), null },
+
       { typeof(SteelHat), ExtEntity.GetState }, // Investigate
       { typeof(SuperBombArrow),  (e) => MySuperBombArrow.GetState((SuperBombArrow)e) },
       //{ typeof(SuperBombArrow), null },
       { typeof(SwitchBlock),  (e) => MySwitchBlock.GetState((SwitchBlock)e) },
       //{ typeof(SwitchBlock), null },
+
       { typeof(TechnoMage), ExtEntity.GetState },
       { typeof(TechnoMage.TechnoMissile), ExtEntity.GetState },
       { typeof(Tornado), ExtEntity.GetState }, // Investigate
       { typeof(ToyArrow), ExtEntity.GetStateArrow },
       { typeof(TreasureChest),  (e) => MyTreasureChest.GetState((TreasureChest)e) },
       //{ typeof(TreasureChest), null },
+
       { typeof(TriggerArrow), ExtEntity.GetStateArrow },
       { typeof(WingsPickup), (e) => ExtEntity.GetStateItem(e, TypesItems.Wings) },
       { typeof(WoodenHat), ExtEntity.GetState }, // Investigate

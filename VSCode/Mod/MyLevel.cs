@@ -45,8 +45,29 @@ namespace TFModFortRiseAIModule {
     }
 
 		public static void Update_patch(On.TowerFall.Level.orig_Update orig, global::TowerFall.Level self) {
+      if (!(self.Ending))
+      {
+        //if (self.Session.CurrentLevel.LivingPlayers > 0 && ((Player)self.Session.CurrentLevel.Players[0]).playTagCountDownOn) //todo maybe crash here...
+        //  TowerfallModPlayTag.TowerfallModPlayTag.Update();
+          //TODO PLAYTAG
+
+        //if (AiMod.ModAIEnabled)
+        //{
+          Agents.RefreshInputFromAgents(self);
+
+        //}
+
+        //if (NAIMod.NAIMod.NAIModEnabled)
+        //{
+          NAIMod.AgentUpdate(self);
+        //}
+      }
+      else
+      {
+      }
+
       //if (AiMod.ModAIEnabled) {
-        Agents.RefreshInputFromAgents(self);
+      //Agents.RefreshInputFromAgents(self);
       //}
 
       orig(self);

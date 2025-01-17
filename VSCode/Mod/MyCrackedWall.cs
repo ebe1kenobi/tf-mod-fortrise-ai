@@ -11,6 +11,7 @@ namespace TFModFortRiseAIModule {
       ExtEntity.SetAiState(ent, state);
       var dynData = DynamicData.For(ent);
       state.count = (float)dynData.Get("explodeCounter");
+      dynData.Dispose();
       return state;
     }
   }

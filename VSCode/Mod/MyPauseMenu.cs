@@ -1,10 +1,13 @@
-﻿using FortRise;
+﻿using System;
+using FortRise;
 using Microsoft.Xna.Framework;
 using TowerFall;
 
 
 namespace TFModFortRiseAIModule {
   public class MyPauseMenu {
+
+  	public static DateTime creationTime;
 
     internal static void Load()
     {
@@ -33,6 +36,7 @@ namespace TFModFortRiseAIModule {
     }
 
     public MyPauseMenu() { }
+
 
     public static void VersusMatchSettingsAndSave_patch(On.TowerFall.PauseMenu.orig_VersusMatchSettingsAndSave orig, global::TowerFall.PauseMenu self) {
       if (AiMod.ModAITraining) {

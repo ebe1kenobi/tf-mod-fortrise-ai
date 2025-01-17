@@ -12,6 +12,7 @@ namespace TFModFortRiseAIModule {
       var dynData = DynamicData.For(ent);
       state.state = dynData.Get("state").ToString().FirstLower();
       //state.state = ent.state.ToString().FirstLower();
+      dynData.Dispose();
       return state;
     }
   }

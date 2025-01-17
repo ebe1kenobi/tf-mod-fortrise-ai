@@ -17,6 +17,7 @@ namespace TFModFortRiseAIModule {
       };
 
       aiState.radius = ((float)dynData.Get("radius"));
+      dynData.Dispose();
 
       return aiState;
     }

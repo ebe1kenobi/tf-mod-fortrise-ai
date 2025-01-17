@@ -1,4 +1,5 @@
-﻿namespace TowerfallAi.Data {
+﻿namespace TFModFortRiseAIModule
+{
   public static class GameModes {
     public static string Quest = "Quest";
     public static string DarkWorld = "DarkWorld";

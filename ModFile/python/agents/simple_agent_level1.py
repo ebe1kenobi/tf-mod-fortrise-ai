@@ -25,7 +25,12 @@ class SimpleAgentLevel1(Agent):
     for state in self.players:
       if state['playerIndex'] == self.my_state['playerIndex']:
         continue
-      
+      #search the tag Player if not himself
+      if self.is_playtag_on() and not self.is_tag():
+        if state['playTag'] == True:
+          enemy_state = state
+          break        
+        continue
       if (self.state_scenario['mode'] != "Quest" and self.state_scenario['mode'] != "DarkWorld") \
         and ((state['team'] == 'neutral') or state['team'] != self.my_state['team']):
         enemy_state = state
@@ -37,16 +42,30 @@ class SimpleAgentLevel1(Agent):
         if state['isEnemy']:
           enemy_state = state
 
-    # If no enemy is found, means all are dead.
+    # If no enemy is found, means all are dead
     if enemy_state == None:
       self.send_actions()
       return
 
-    if not self.has_move():
+    my_pos = self.my_state['pos']
+    enemy_pos = enemy_state['pos']
+    
+    # simple management of playtag mode pursue or flee
+    if self.is_playtag_on():
+      if self.is_tag(): # pursue
+        if my_pos['x'] < enemy_pos['x']:
+          self.press('r')
+        else:
+          self.press('l')
+      else: # flee
+        if my_pos['x'] < enemy_pos['x']:
+          self.press('l')
+        else:
+          self.press('r')
+        
+    elif not self.has_move():
       # logging.info("not has_move")
 
-      my_pos = self.my_state['pos']
-      enemy_pos = enemy_state['pos']
       if enemy_pos['y'] >= my_pos['y'] and enemy_pos['y'] <= my_pos['y'] + 50:
         # Runs away if enemy is right above
         if my_pos['x'] < enemy_pos['x']:

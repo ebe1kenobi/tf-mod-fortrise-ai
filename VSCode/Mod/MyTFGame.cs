@@ -17,7 +17,7 @@ namespace TFModFortRiseAIModule {
       On.TowerFall.TFGame.Initialize += Initialize_patch;
       On.TowerFall.TFGame.Update += Update_patch;
       On.TowerFall.TFGame.Draw += Draw_patch;
-      On.TowerFall.TFGame.Main += Main_ctor;
+      //On.TowerFall.TFGame.Main += Main_ctor;
     }
 
     internal static void Unload()
@@ -26,31 +26,35 @@ namespace TFModFortRiseAIModule {
       On.TowerFall.TFGame.Initialize -= Initialize_patch;
       On.TowerFall.TFGame.Update -= Update_patch;
       On.TowerFall.TFGame.Draw -= Draw_patch;
-      On.TowerFall.TFGame.Main -= Main_ctor;
+      //On.TowerFall.TFGame.Main -= Main_ctor;
 
     }
 
-    [STAThread]
-    public static void Main_ctor(On.TowerFall.TFGame.orig_Main orig, string[] args)
-    {
-      Logger.Info("Main_ctor");
+    //[STAThread]
+    //public static void Main_ctor(On.TowerFall.TFGame.orig_Main orig, string[] args)
+    //{
+    //  Logger.Info("Main_ctor");
 
-      try
-      {
-        AiMod.ParseArgs(args);
-        typeof(TFGame).GetMethod("$original_Main").Invoke(null, new object[] { args });
-      }
-      catch (Exception exception)
-      {
-        TFGame.Log(exception, false);
-        TFGame.OpenLog();
-      }
-    }
+    //  //try
+    //  //{
+    //    AiMod.ParseArgs(args);
+    //    NAIMod.ParseArgs(args);
+    //    orig(args);
+    //  //}
+    //  //catch (Exception exception)
+    //  //{
+    //  //  TFGame.Log(exception, false);
+    //  //  TFGame.OpenLog();
+    //  //}
+    //}
     public MyTFGame() { }
 
     public static void ctor_patch(On.TowerFall.TFGame.orig_ctor orig, global::TowerFall.TFGame self, bool noIntro) {
 
-      AiMod.ModAIEnabled = true;
+      //AiMod.ModAIEnabled = true;
+      //AiMod.ModAITraining = false;
+      //NAIMod.NAIModEnabled = true;
+      //AiMod.ModAIEnabled = true;
       orig(self, noIntro);
       //var ptr = typeof(TFGame).GetMethod("$original_Initialize").MethodHandle.GetFunctionPointer();
       //originalInitialize = (Action)Activator.CreateInstance(typeof(Action), this, ptr);
@@ -79,6 +83,7 @@ namespace TFModFortRiseAIModule {
       //  originalInitialize();
       //  return;
       //}
+      //Logger.Info($"TowerfallAiMod version: {AiMod.ModAiVersion} Enabled: {AiMod.ModAIEnabled} Training: {AiMod.ModAITraining}");
 
       AiMod.PreGameInitialize();
       orig(self);
@@ -91,8 +96,9 @@ namespace TFModFortRiseAIModule {
       //  originalUpdate(gameTime);
       //  return;
       //}
-      AiMod.gameTime = gameTime;
-      AiMod.Update(orig, self, gameTime);
+      TFModFortRiseAIModule.gameTime = gameTime;
+      TFModFortRiseAIModule.Update(orig, self);
+
     }
 
     public static void Draw_patch(On.TowerFall.TFGame.orig_Draw orig, global::TowerFall.TFGame self, GameTime gameTime) {

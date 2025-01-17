@@ -13,6 +13,7 @@ namespace TFModFortRiseAIModule {
       var dynData = DynamicData.For(ent);
       aiState.warning = ((bool)dynData.Get("drawFlicker")) || ((float)dynData.Get("DrawWarning")) > 0;
 
+      dynData.Dispose();
       return aiState;
     }
   }

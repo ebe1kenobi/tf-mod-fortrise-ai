@@ -17,6 +17,7 @@ namespace TFModFortRiseAIModule {
       }
 
       ExtEntity.SetAiState(ent, aiState);
+      dynData.Dispose();
       return aiState;
     }
   }

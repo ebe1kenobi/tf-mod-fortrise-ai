@@ -21,6 +21,7 @@ namespace TFModFortRiseAIModule {
       };
 
       aiState.state = ((ShiftBlock.States)Util.GetPublicFieldValue("state", ent)).ToString().FirstLower();
+      dynData.Dispose();
       return aiState;
     }
   }

@@ -13,6 +13,7 @@ namespace TFModFortRiseAIModule {
       aiState.type = ConversionTypes.CultistTypes.GetB((TowerFall.Cultist.CultistTypes)dynData.Get("type"));
       //aiState.type = ConversionTypes.CultistTypes.GetB(ent.type);
       ExtEntity.SetAiState(ent, aiState);
+      dynData.Dispose();
       return aiState;
     }
   }

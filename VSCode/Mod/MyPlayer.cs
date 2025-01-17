@@ -43,6 +43,7 @@ namespace TFModFortRiseAIModule
         y = -aim.Y
       };
       aiState.team = AgentConfigExtension.GetTeam(ent.TeamColor);
+      dynData.Dispose();
 
       return aiState;
     }

@@ -35,15 +35,17 @@ namespace TFModFortRiseAIModule
 
     public static void Render_patch(On.TowerFall.Loader.orig_Render orig, global::TowerFall.Loader self)
     {
-      var loader = DynamicData.For(self);
+      var dynData = DynamicData.For(self);
       
       String Message = "WAITING AI TO CONNECT ...";
       for (var i = 0; i < (int)(DateTime.Now - creationTime).TotalSeconds; i++) {
+        if (i % 2 == 0) continue;
         Message += ".";
       }
 
-      loader.Set("Message", Message);
+      dynData.Set("Message", Message);
       orig(self);
+      dynData.Dispose();
     }
 
   }

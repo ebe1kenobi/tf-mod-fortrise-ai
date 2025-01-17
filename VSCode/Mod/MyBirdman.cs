@@ -11,7 +11,7 @@ namespace TFModFortRiseAIModule {
     public static StateEntity GetState(this Birdman ent) {
       var aiState = new StateEntity { type = "birdman" };
 
-      var birdman = DynamicData.For(ent);
+      //var dynData = DynamicData.For(ent);
 
 
       if ((Counter)Util.GetFieldValue("attackCooldown", typeof(Birdman), ent, BindingFlags.Public | BindingFlags.Instance) 
@@ -30,6 +30,7 @@ namespace TFModFortRiseAIModule {
       }
       
       ExtEntity.SetAiState(ent, aiState);
+      //dynData.Dispose();
       return aiState;
     }
   }
