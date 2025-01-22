@@ -151,7 +151,7 @@ namespace TFModFortRiseAIModule
       //    self.press('l')
       /////////////////////////////////////////////
 
-      //Game mode playtag TODO
+      //Game mode playtag TODO  (TFModFortRiseAIModule.IsModPlaytagExists
       //if (agent.playTagCountDownOn)
       //{
       //  if (agent.playTag)

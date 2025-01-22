@@ -36,6 +36,7 @@ namespace TFModFortRiseAIModule
   public class TFModFortRiseAIModule : FortModule
   {
     public static TFModFortRiseAIModule Instance;
+    public static bool IsModPlaytagExists;
 
     public const string BaseDirectory = "TFModFortRiseAIModule";
 
@@ -64,8 +65,9 @@ namespace TFModFortRiseAIModule
 
     public override void Load()
     {
+      IsModPlaytagExists = IsModExists("PlayTag");
       MyLevel.Load();
-      MyLoader.Load();
+      //MyLoader.Load();
       MyMainMenu.Load();
       MyMenuInput.Load();
       MyPauseMenu.Load();
@@ -80,7 +82,7 @@ namespace TFModFortRiseAIModule
     public override void Unload()
     {
       MyLevel.Unload();
-      MyLoader.Unload();
+      //MyLoader.Unload();
       MyMainMenu.Unload();
       MyMenuInput.Unload();
       MyPauseMenu.Unload();
@@ -90,6 +92,12 @@ namespace TFModFortRiseAIModule
       MyPlayerIndicator.Unload();
       MyRollcallElement.Unload();
       MyVersusRoundResults.Unload();
+    }
+
+    public override void ParseArgs(string[] args)
+    {
+      AiMod.ParseArgs(args);
+      NAIMod.ParseArgs(args);
     }
 
     public static bool CurrentPlayerIs(PlayerType type, int playerIndex)
@@ -125,6 +133,8 @@ namespace TFModFortRiseAIModule
       //Logger.Info("TFGame.GameLoaded:" + TFGame.GameLoaded);
       //Logger.Info("isHumanPlayerTypeSaved:" + isHumanPlayerTypeSaved);
 
+
+      //////////////////////////////////////
       if (TFGame.GameLoaded && !isHumanPlayerTypeSaved)
       {
         //Logger.Info("in TFGame.GameLoaded && !isHumanPlayerTypeSaved");
@@ -138,16 +148,26 @@ namespace TFModFortRiseAIModule
         }
         isHumanPlayerTypeSaved = true;
       }
+      //////////////////////////////////////
+
+
       //Logger.Info("after if");
 
       //if (NAIMod.NAIModEnabled)
       //{
-        //Logger.Info("in AIMod.NAIModEnabled");
-        if (TFGame.GameLoaded && !NAIMod.isAgentReady && isHumanPlayerTypeSaved)
-        {
-          //Logger.Info("call CreateAgent()");
-          NAIMod.CreateAgent();
-        }
+      //Logger.Info("in AIMod.NAIModEnabled");
+
+
+      //////////////////////////////////////
+      if (TFGame.GameLoaded && !NAIMod.isAgentReady && isHumanPlayerTypeSaved)
+      {
+        //Logger.Info("call CreateAgent()");
+        NAIMod.CreateAgent(); // TODO
+      }
+      //////////////////////////////////////
+
+
+
       //}
       //Logger.Info("after if NAIMOD()");
 
@@ -207,9 +227,9 @@ namespace TFModFortRiseAIModule
           }
           else
           {
-            Logger.Info("else " + gameTime.TotalGameTime);
-            Logger.Info("else " + gameTime.ElapsedGameTime);
-            Logger.Info("else " + gameTime.ToString());
+            //Logger.Info("else " + gameTime.TotalGameTime);
+            //Logger.Info("else " + gameTime.ElapsedGameTime);
+            //Logger.Info("else " + gameTime.ToString());
             orig(self, gameTime);
             //Logger.Info("after");
           }

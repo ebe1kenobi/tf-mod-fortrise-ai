@@ -39,6 +39,7 @@ namespace TFModFortRiseAIModule
       
       String Message = "WAITING AI TO CONNECT ...";
       for (var i = 0; i < (int)(DateTime.Now - creationTime).TotalSeconds; i++) {
+      //for (var i = 0; i < 1000000; i++) {
         if (i % 2 == 0) continue;
         Message += ".";
       }

@@ -21,6 +21,8 @@ namespace TFModFortRiseAIModule {
     }
 
     public int Start(string ip = "127.0.0.1", int port = 0) {
+      Logger.Info("Server Start");
+
       if (serverTask != null && serverTask.IsAlive()) {
         throw new InvalidOperationException("Server task is still alive");
       }

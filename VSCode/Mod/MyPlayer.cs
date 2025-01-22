@@ -13,7 +13,6 @@ namespace TFModFortRiseAIModule
     public static StateEntity GetState(this Player ent)
     //public static StateEntity GetState(this Player ent)
     {
-      Logger.Info("MyPlayer.GetState");
       //var ent = DynamicData.For(p);
 
       var aiState = new StateArcher() { type = "archer" };

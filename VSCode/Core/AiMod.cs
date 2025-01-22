@@ -133,9 +133,6 @@ namespace TFModFortRiseAIModule {
       }
 
       Logger.Info("Waiting for game to load.");
-      while (!TFGame.GameLoaded) {
-        Thread.Sleep(200);
-      }
 
       loadContentMutex.ReleaseMutex();
 
@@ -195,6 +192,7 @@ namespace TFModFortRiseAIModule {
     }
 
     public static bool IsMatchRunning() {
+
       if (IsNoConfig) {
         if (Config == null) return false;
         if (Config.agents == null) return false;
@@ -411,7 +409,7 @@ namespace TFModFortRiseAIModule {
         matchSettings = new MatchSettings(levelSystem, Modes.LastManStanding, matchLength);
         matchSettings.Variants.TournamentRules();
       }
-      //else if (Config.mode == GameModes.PlayTag)
+      //else if (TFModFortRiseAIModule.IsModPlaytagExists && Config.mode == GameModes.PlayTag)
       //{
       //  Logger.Info("Configuring PlayTag mode.");
       //  matchSettings = new MatchSettings(levelSystem, Modes.PlayTag, matchLength);

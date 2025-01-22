@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.Threading;
+using Monocle;
+using System;
 using FortRise;
 using Microsoft.Xna.Framework;
 using TowerFall;
@@ -18,6 +20,7 @@ namespace TFModFortRiseAIModule {
       On.TowerFall.TFGame.Update += Update_patch;
       On.TowerFall.TFGame.Draw += Draw_patch;
       //On.TowerFall.TFGame.Main += Main_ctor;
+      On.TowerFall.TFGame.Load += Load_patch;
     }
 
     internal static void Unload()
@@ -27,19 +30,20 @@ namespace TFModFortRiseAIModule {
       On.TowerFall.TFGame.Update -= Update_patch;
       On.TowerFall.TFGame.Draw -= Draw_patch;
       //On.TowerFall.TFGame.Main -= Main_ctor;
-
+      On.TowerFall.TFGame.Load -= Load_patch;
     }
 
-    //[STAThread]
+    ////[STAThread]
     //public static void Main_ctor(On.TowerFall.TFGame.orig_Main orig, string[] args)
     //{
+    //  Logger.Init("Main_ctor");
     //  Logger.Info("Main_ctor");
+    //  orig(args);
 
     //  //try
     //  //{
-    //    AiMod.ParseArgs(args);
-    //    NAIMod.ParseArgs(args);
-    //    orig(args);
+    //  AiMod.ParseArgs(args);
+    //  NAIMod.ParseArgs(args);
     //  //}
     //  //catch (Exception exception)
     //  //{
@@ -47,6 +51,7 @@ namespace TFModFortRiseAIModule {
     //  //  TFGame.OpenLog();
     //  //}
     //}
+
     public MyTFGame() { }
 
     public static void ctor_patch(On.TowerFall.TFGame.orig_ctor orig, global::TowerFall.TFGame self, bool noIntro) {
@@ -78,6 +83,56 @@ namespace TFModFortRiseAIModule {
       //}
     }
 
+    public static void Load_patch(On.TowerFall.TFGame.orig_Load orig) {
+      //Logger.Info("TFGame.Load_patch");
+      orig();
+      //TFGame.GameLoaded = false;
+      TaskHelper.Run("waiting AI python to connect", () =>
+      {
+        try
+        {
+          AiMod.PreGameInitialize();
+
+          //Logger.Info("TFGame.Load_patch try");
+          //Loader.Message = "WAITING FOR IA";
+
+          AiMod.PostGameInitialize();
+
+          //if (TFGame.GameLoaded && !TFModFortRiseAIModule.isHumanPlayerTypeSaved)
+          //{
+          //  Logger.Info("in TFGame.GameLoaded && !isHumanPlayerTypeSaved");
+          //  for (var i = 0; i < TFGame.PlayerInputs.Length; i++)
+          //  {
+          //    //Logger.Info("i=" + i);
+          //    if (TFGame.PlayerInputs[i] == null) continue;
+          //    TFModFortRiseAIModule.nbPlayerType[i]++;
+          //    TFModFortRiseAIModule.currentPlayerType[i] = PlayerType.Human;
+          //    TFModFortRiseAIModule.savedHumanPlayerInput[i] = TFGame.PlayerInputs[i];
+          //  }
+          //  TFModFortRiseAIModule.isHumanPlayerTypeSaved = true;
+          //}
+
+          //if (TFGame.GameLoaded && !NAIMod.isAgentReady && TFModFortRiseAIModule.isHumanPlayerTypeSaved)
+          //{
+          //  Logger.Info("call CreateAgent()");
+          //  NAIMod.CreateAgent();
+          //}
+
+          while (!AiMod.PreUpdate()) {
+            //Logger.Info("while (!AiMod.PreUpdate())");
+            Thread.Sleep(1000);
+          }
+
+        }
+        catch (Exception ex)
+        {
+          TFGame.Log(ex, true);
+          TFGame.OpenLog();
+          Engine.Instance.Exit();
+        }
+      });
+    }
+
     public static void Initialize_patch(On.TowerFall.TFGame.orig_Initialize orig, global::TowerFall.TFGame self) {
       //if (!AiMod.ModAIEnabled) {
       //  originalInitialize();
@@ -85,9 +140,9 @@ namespace TFModFortRiseAIModule {
       //}
       //Logger.Info($"TowerfallAiMod version: {AiMod.ModAiVersion} Enabled: {AiMod.ModAIEnabled} Training: {AiMod.ModAITraining}");
 
-      AiMod.PreGameInitialize();
+      //AiMod.PreGameInitialize();
       orig(self);
-      AiMod.PostGameInitialize();
+      //AiMod.PostGameInitialize();
     }
 
     public static void Update_patch(On.TowerFall.TFGame.orig_Update orig, global::TowerFall.TFGame self, GameTime gameTime) {
