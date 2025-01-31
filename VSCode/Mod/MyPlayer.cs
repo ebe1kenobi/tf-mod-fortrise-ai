@@ -42,6 +42,17 @@ namespace TFModFortRiseAIModule
         y = -aim.Y
       };
       aiState.team = AgentConfigExtension.GetTeam(ent.TeamColor);
+      if (PlayTagImport.IsPlayerPlayTag != null)
+      {
+        aiState.playTagOn = PlayTagImport.IsPlayTagCountDownOn(ent.PlayerIndex);
+        aiState.playTag = PlayTagImport.IsPlayerPlayTag(ent.PlayerIndex);
+      }
+      else
+      {
+        aiState.playTagOn = false;
+        aiState.playTag = false;
+      }
+
       dynData.Dispose();
 
       return aiState;

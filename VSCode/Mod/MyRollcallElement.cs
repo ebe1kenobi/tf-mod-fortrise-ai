@@ -1,9 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
+using MonoMod;
+using FortRise;
 using System;
 using System.Collections.Generic;
 using TowerFall;
+
 
 namespace TFModFortRiseAIModule
 {
@@ -16,6 +19,7 @@ namespace TFModFortRiseAIModule
     public static Dictionary<int, Text> playerName = new Dictionary<int, Text>(8);
     public static Dictionary<int, Image> upArrow = new Dictionary<int, Image>(8);
     public static Dictionary<int, Image> downArrow = new Dictionary<int, Image>(8);
+    public static Dictionary<String, int> difficultyLevel = new Dictionary<string, int>();
 
     internal static void Load()
     {
@@ -99,7 +103,9 @@ namespace TFModFortRiseAIModule
       //Logger.Info("before playerName[playerIndex] = new ...");
       playerName[playerIndex] = new Text(TFGame.Font, name, positionText, color, Text.HorizontalAlign.Left, Text.VerticalAlign.Bottom);
       //Logger.Info("before self.Add((Component)playerName[playerIndex]");
-      
+
+      difficultyLevel["AI"] = 20;
+      difficultyLevel["NAI"] = 20;
       //!!
       self.Add((Component)playerName[playerIndex]);
       
@@ -108,7 +114,9 @@ namespace TFModFortRiseAIModule
 
     public static void SetPlayerName(int playerIndex) {
       var dynData = DynamicData.For(playerName[playerIndex]);
-      string name = TFModFortRiseAIModule.GetPlayerTypePlaying(playerIndex) + (playerIndex + 1);
+      String type = TFModFortRiseAIModule.GetPlayerTypePlaying(playerIndex);
+      string name = type + (playerIndex + 1);
+      //string name = type + (playerIndex + 1) + (type != "P" ? "\n\nLVL " + difficultyLevel[type] : "");
       //Logger.Info(name);
       //Logger.Info((string)dynData.Get("text"));
       dynData.Set("text", name);
@@ -129,7 +137,7 @@ namespace TFModFortRiseAIModule
     //}
 
     public static void SetAllPLayerInput() {
-      for (var i = 0; i < TFModFortRiseAIModule.currentPlayerType.Length; i++) {
+      for (var i = 0; i < TFGame.Players.Length; i++) {
         switch (TFModFortRiseAIModule.currentPlayerType[i]) {
           case PlayerType.Human:
             TFGame.PlayerInputs[i] = TFModFortRiseAIModule.savedHumanPlayerInput[i];
@@ -240,6 +248,18 @@ namespace TFModFortRiseAIModule
       var input = DynamicData.For(dynData.Get("input"));
       if (input == null)
         return 0;
+
+      if ((int)TFModFortRiseAIModule.currentPlayerType[playerIndex] > (int)PlayerType.Human)
+      {
+        String type = TFModFortRiseAIModule.GetPlayerTypePlaying(playerIndex);
+
+        if ((bool)input.Get("MenuAlt"))
+          difficultyLevel[type] += 5;
+        if (difficultyLevel[type] > 100) difficultyLevel[type] = 0;
+        if ((bool)input.Get("MenuAlt2"))
+          difficultyLevel[type] -= 5;
+        if (difficultyLevel[type] < 1) difficultyLevel[type] = 100;
+      }
 
       var MenuUp = (bool)input.Get("MenuUp");
       var MenuDown = (bool)input.Get("MenuDown");

@@ -25,7 +25,8 @@ namespace TFModFortRiseAIModule {
     private const string defaultConfigName = "config.json";
 
     public static bool AgentConnected = false;
-    public static AgentConnection[] agents = new AgentConnection[TFGame.Players.Length];
+    //public static AgentConnection[] agents = new AgentConnection[TFGame.Players.Length];
+    public static AgentConnection[] agents = new AgentConnection[8];
 
     public static bool ModAIEnabled { get;  set;}
     public static bool ModAITraining { get;  set;}

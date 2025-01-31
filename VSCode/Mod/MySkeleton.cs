@@ -12,9 +12,13 @@ namespace TFModFortRiseAIModule {
 
       ExtEntity.SetAiState(ent, aiState);
       aiState.playerIndex = -1;
-      PlayerShield shield = ((PlayerShield)Util.GetPublicFieldValue("shield", ent));
+      //TODO test GetPrivateFieldValue 
+      PlayerShield shield = ((PlayerShield)Util.GetPrivateFieldValue("shield", ent));
+      //PlayerShield shield = ((PlayerShield)Util.GetPublicFieldValue("shield", ent));
       aiState.shield = shield != null && shield.Visible;
-      PlayerWings wings = ((PlayerWings)Util.GetPublicFieldValue("wings", ent));
+      //TODO test GetPrivateFieldValue 
+      PlayerWings wings = ((PlayerWings)Util.GetPrivateFieldValue("wings", ent));
+      //PlayerWings wings = ((PlayerWings)Util.GetPublicFieldValue("wings", ent));
       aiState.wing = wings != null && wings.Visible;
       aiState.arrows = new List<string>();
       List<ArrowTypes> arrows = ent.Arrows.Arrows;
@@ -24,7 +28,9 @@ namespace TFModFortRiseAIModule {
       aiState.canHurt = ent.CanHurt;
       aiState.dead = ent.IsDead();
       aiState.facing = (int)ent.Facing;
-      aiState.onGround = (bool)Util.GetPublicFieldValue("onGround", ent);
+      //TODO test GetPrivateFieldValue 
+      aiState.onGround = (bool)Util.GetPrivateFieldValue("onGround", ent);
+      //aiState.onGround = (bool)Util.GetPublicFieldValue("onGround", ent);
       aiState.onWall = false;
 
       Vector2 aim = Calc.AngleToVector(ent.AimingAngle, 1);

@@ -37,6 +37,7 @@ namespace TFModFortRiseAIModule
   {
     public static TFModFortRiseAIModule Instance;
     public static bool IsModPlaytagExists;
+    public static bool IsModEigthPlayerExists;
 
     public const string BaseDirectory = "TFModFortRiseAIModule";
 
@@ -44,9 +45,14 @@ namespace TFModFortRiseAIModule
     public static Stopwatch gameTimeWatch;
     private static readonly Stopwatch fpsWatch = new Stopwatch();
 
-    public static PlayerInput[] savedHumanPlayerInput = new PlayerInput[TFGame.Players.Length];
-    public static int[] nbPlayerType = new int[TFGame.Players.Length];
-    public static PlayerType[] currentPlayerType = new PlayerType[TFGame.Players.Length];
+    //public static PlayerInput[] savedHumanPlayerInput = new PlayerInput[TFGame.Players.Length];
+    //public static int[] nbPlayerType = new int[TFGame.Players.Length];
+    //public static PlayerType[] currentPlayerType = new PlayerType[TFGame.Players.Length];
+
+    public static PlayerInput[] savedHumanPlayerInput = new PlayerInput[8];
+    public static int[] nbPlayerType = new int[8];
+    public static PlayerType[] currentPlayerType = new PlayerType[8];
+
     public static bool isHumanPlayerTypeSaved = false;
 
     public override Type SettingsType => typeof(TFModFortRiseAISettings);
@@ -65,7 +71,7 @@ namespace TFModFortRiseAIModule
 
     public override void Load()
     {
-      IsModPlaytagExists = IsModExists("PlayTag");
+
       MyLevel.Load();
       //MyLoader.Load();
       MyMainMenu.Load();
@@ -77,10 +83,15 @@ namespace TFModFortRiseAIModule
       MyPlayerIndicator.Load();
       MyRollcallElement.Load();
       MyVersusRoundResults.Load();
+
+      typeof(EigthPlayerImport).ModInterop();
+      typeof(PlayTagImport).ModInterop();
+
     }
 
     public override void Unload()
     {
+      TFModFortRiseAIModule.IsModEigthPlayerExists = IsModExists("WiderSetMod");
       MyLevel.Unload();
       //MyLoader.Unload();
       MyMainMenu.Unload();
@@ -138,7 +149,8 @@ namespace TFModFortRiseAIModule
       if (TFGame.GameLoaded && !isHumanPlayerTypeSaved)
       {
         //Logger.Info("in TFGame.GameLoaded && !isHumanPlayerTypeSaved");
-        for (var i = 0; i < TFGame.PlayerInputs.Length; i++)
+        for (var i = 0; i < TFGame.Players.Length; i++)
+        //for (var i = 0; i < TFGame.PlayerInputs.Length; i++)
         {
           //Logger.Info("i=" + i);
           if (TFGame.PlayerInputs[i] == null) continue;

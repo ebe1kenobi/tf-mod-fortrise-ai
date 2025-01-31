@@ -67,14 +67,17 @@ namespace TFModFortRiseAIModule
         //if (AiMod.ModAITraining)
         //{
           //for training, we count only the human from the config
-          numberOfSlotOpen = TFGame.PlayerInputs.Length; //todo getplayer 8 or 4
-        //}
-      //  else
-      //  {
-      //    numberOfSlotOpen = TFGame.PlayerInputs.Length; //todo getplayer 8 or 4
-      //                                                   //for the normal game, we count the number of joystick connected
-      //}
+          //numberOfSlotOpen = TFGame.PlayerInputs.Length; //todo getplayer 8 or 4
+          numberOfSlotOpen = TFGame.Players.Length; //todo getplayer 8 or 4
+          //numberOfSlotOpen = TFModFortRiseAIModule.IsModEigthPlayerExists ? 8 : 4; 
       
+        //}
+        //  else
+        //  {
+        //    numberOfSlotOpen = TFGame.PlayerInputs.Length; //todo getplayer 8 or 4
+        //                                                   //for the normal game, we count the number of joystick connected
+        //}
+
         return numberOfSlotOpen;
     }
 
@@ -91,7 +94,10 @@ namespace TFModFortRiseAIModule
       }
       else
       {
-        indexAgent = TFGame.PlayerInputs.Length - nbSlotOpen;
+        indexAgent = TFGame.Players.Length - nbSlotOpen;
+        //indexAgent = TFGame.PlayerInputs.Length - nbSlotOpen;
+        //indexAgent = (TFModFortRiseAIModule.IsModEigthPlayerExists ? 8 : 4) - nbSlotOpen;
+       
       }
       //int maxPlayer = 4;
       //if (TF8PlayerMod.TF8PlayerMod.Mod8PEnabled)
@@ -100,7 +106,8 @@ namespace TFModFortRiseAIModule
       //  TFGame.Players = new bool[maxPlayer];
       //}
 
-      for (int i = 0; i < agentConfigs.Count && i < TFGame.PlayerInputs.Length; i++)
+      //for (int i = 0; i < agentConfigs.Count && i < TFGame.PlayerInputs.Length; i++)
+      for (int i = 0; i < agentConfigs.Count && i < TFGame.Players.Length; i++)
       {
         AgentConfig agentConfig = agentConfigs[i];
 
@@ -304,6 +311,7 @@ namespace TFModFortRiseAIModule
 
     public static void RefreshInputFromAgents(Level level) {
 
+        //Logger.Info("RefreshInputFromAgents");
       // Game has to be reset at least once in Sandbox mode.
       if (AiMod.Config.mode == GameModes.Sandbox && !IsReset) return;
 

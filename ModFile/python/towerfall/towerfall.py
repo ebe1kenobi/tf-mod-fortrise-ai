@@ -226,7 +226,7 @@ class Towerfall:
     if not metadata:
       self._try_log(logging.info, f'Starting new process from {self.towerfall_path_exe}.')
       pargs = [self.towerfall_path_exe]
-      # Popen(pargs, cwd=self.towerfall_path)
+      Popen(pargs, cwd=self.towerfall_path)
 
     tries = 0
     self._try_log(logging.info, f'Waiting for available process.')

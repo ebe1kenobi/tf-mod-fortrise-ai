@@ -10,7 +10,9 @@ namespace TFModFortRiseAIModule {
     public static StateEntity GetState(this KingReaper ent) {
       var aiState = new StateKingReaper { type = "kingReaper" };
       ExtEntity.SetAiState(ent, aiState);
-      aiState.shield = (Counter)Util.GetPublicFieldValue("shieldCounter", ent);
+      //TODO test GetPrivateFieldValue 
+      aiState.shield = (Counter)Util.GetPrivateFieldValue("shieldCounter", ent);
+      //aiState.shield = (Counter)Util.GetPublicFieldValue("shieldCounter", ent);
       return aiState;
     }
   }

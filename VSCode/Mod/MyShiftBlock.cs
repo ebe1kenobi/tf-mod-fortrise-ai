@@ -19,8 +19,9 @@ namespace TFModFortRiseAIModule {
         x = ((Vector2)dynData.Get("node")).X,
         y = ((Vector2)dynData.Get("node")).Y
       };
-
-      aiState.state = ((ShiftBlock.States)Util.GetPublicFieldValue("state", ent)).ToString().FirstLower();
+      //TODO test GetPrivateFieldValue 
+      aiState.state = ((ShiftBlock.States)Util.GetPrivateFieldValue("state", ent)).ToString().FirstLower();
+      //aiState.state = ((ShiftBlock.States)Util.GetPublicFieldValue("state", ent)).ToString().FirstLower();
       dynData.Dispose();
       return aiState;
     }

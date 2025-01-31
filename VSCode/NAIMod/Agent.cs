@@ -84,10 +84,11 @@ namespace TFModFortRiseAIModule
           if (player.PlayerIndex == index) continue;
           // TODO playtag support
           //if (agent.playTagCountDownOn && player.playTag)
-          //{
-          //  enemy = player;
-          //  break;
-          //}
+          if (PlayTagImport.IsPlayTagCountDownOn(agent.PlayerIndex) && PlayTagImport.IsPlayerPlayTag(player.PlayerIndex))
+          {
+            enemy = player;
+            break;
+          }
           if (agent.TeamColor == Allegiance.Neutral || player.TeamColor != agent.TeamColor)
           {
             // TODO each agent tak ethe same enemy if they all start from the beginning
@@ -150,43 +151,44 @@ namespace TFModFortRiseAIModule
       //  else:
       //    self.press('l')
       /////////////////////////////////////////////
-
       //Game mode playtag TODO  (TFModFortRiseAIModule.IsModPlaytagExists
       //if (agent.playTagCountDownOn)
-      //{
-      //  if (agent.playTag)
-      //  {
-      //    // pursue
-      //    if (enemyPosition.X > agentPosition.X)
-      //    {
-      //      //right
-      //      this.input.inputState.MoveX += 1;
-      //      this.input.inputState.AimAxis.X += 1;
-      //    }
-      //    else
-      //    {
-      //      //left
-      //      this.input.inputState.AimAxis.X -= 1;
-      //      this.input.inputState.MoveX -= 1;
-      //    }
-      //  }
-      //  else
-      //  {
-      //    // run away
-      //    if (enemyPosition.X > agentPosition.X)
-      //    {
-      //      //right
-      //      this.input.inputState.MoveX -= 1;
-      //      this.input.inputState.AimAxis.X += 1;
-      //    }
-      //    else
-      //    {
-      //      //left
-      //      this.input.inputState.AimAxis.X += 1;
-      //      this.input.inputState.MoveX += 1;
-      //    }
-      //  }
-      //}
+      if (PlayTagImport.IsPlayTagCountDownOn(agent.PlayerIndex))
+      {
+        //if (agent.playTag)
+        if (PlayTagImport.IsPlayerPlayTag(agent.PlayerIndex))
+        {
+          // pursue
+          if (enemyPosition.X > agentPosition.X)
+          {
+            //right
+            this.input.inputState.MoveX += 1;
+            this.input.inputState.AimAxis.X += 1;
+          }
+          else
+          {
+            //left
+            this.input.inputState.AimAxis.X -= 1;
+            this.input.inputState.MoveX -= 1;
+          }
+        }
+        else
+        {
+          // run away
+          if (enemyPosition.X > agentPosition.X)
+          {
+            //right
+            this.input.inputState.MoveX -= 1;
+            this.input.inputState.AimAxis.X += 1;
+          }
+          else
+          {
+            //left
+            this.input.inputState.AimAxis.X += 1;
+            this.input.inputState.MoveX += 1;
+          }
+        }
+      }
       ////Game Mode versus
       //else 
       if (shoot.Count == 0 &&
@@ -231,7 +233,8 @@ namespace TFModFortRiseAIModule
       //      self.press('s')
       /////////////////////////////////////////////
       //if (!agent.playTagCountDownOn && agent.Arrows.Count > 0) //TODO playtag
-      if (agent.Arrows.Count > 0)
+      if (!PlayTagImport.IsPlayTagCountDownOn(agent.PlayerIndex) && agent.Arrows.Count > 0) 
+      //if (agent.Arrows.Count > 0)
       {
         if (shoot.Count > 0)
         {

@@ -3,10 +3,13 @@ using System.Xml;
 using FortRise;
 using Microsoft.Xna.Framework;
 using TowerFall;
+using Monocle;
 
 
 namespace TFModFortRiseAIModule {
   public class MyLevel {
+
+    public static int nbUpdate = 0;
 
     internal static void Load()
     {
@@ -38,21 +41,32 @@ namespace TFModFortRiseAIModule {
     }
 
 		public static void Update_patch(On.TowerFall.Level.orig_Update orig, global::TowerFall.Level self) {
+      nbUpdate++;
+        //Logger.Info("nbUpdate = " + nbUpdate + " MyRollcallElement.difficultyLevel[\"AI\"] = " + MyRollcallElement.difficultyLevel["AI"] + " MyRollcallElement.difficultyLevel[\"NAI\"] = " + MyRollcallElement.difficultyLevel["NAI"]);
       if (!(self.Ending))
       {
         //if (self.Session.CurrentLevel.LivingPlayers > 0 && ((Player)self.Session.CurrentLevel.Players[0]).playTagCountDownOn) //todo maybe crash here...
         //  TowerfallModPlayTag.TowerfallModPlayTag.Update();
-          //TODO PLAYTAG
-
-        //if (AiMod.ModAIEnabled)
+        //TODO PLAYTAG
+        //if (nbUpdate % MyRollcallElement.difficultyLevel["AI"] == 0)
         //{
           Agents.RefreshInputFromAgents(self);
 
         //}
 
-        //if (NAIMod.NAIMod.NAIModEnabled)
+        //if (nbUpdate % MyRollcallElement.difficultyLevel["NAI"] == 0)
         //{
           NAIMod.AgentUpdate(self);
+        //}
+        //if (AiMod.ModAIEnabled)
+        //{
+        //Agents.RefreshInputFromAgents(self);
+
+        //}
+
+        //if (NAIMod.NAIMod.NAIModEnabled)
+        //{
+          //NAIMod.AgentUpdate(self);
         //}
       }
       else

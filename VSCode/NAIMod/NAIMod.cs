@@ -12,8 +12,10 @@ namespace TFModFortRiseAIModule
     public const string TowerfallKeyboardInputName = "TowerFall.KeyboardInput";
     public static GameTime gameTime;
     public static bool isAgentReady = false;
-    private static Agent[] agents = new Agent[TFGame.Players.Length];
-    public static PlayerInput[] AgentInputs = new PlayerInput[TFGame.Players.Length];
+    //private static Agent[] agents = new Agent[TFGame.Players.Length];
+    private static Agent[] agents = new Agent[8];
+    //public static PlayerInput[] AgentInputs = new PlayerInput[TFGame.Players.Length];
+    public static PlayerInput[] AgentInputs = new PlayerInput[8];
 
     public static bool NAIModEnabled { get;  set;}
     //public static bool NAIModNoKeyboardEnabled { get; private set;}
@@ -57,6 +59,10 @@ namespace TFModFortRiseAIModule
 
     public static void CreateAgent()
     {
+      Logger.Info("TFGame.PlayerInputs.Length = " + TFGame.PlayerInputs.Length);
+      Logger.Info("TFGame.Player.Length = " + TFGame.Players.Length);
+      Logger.Info("AgentInputs.Length = " + AgentInputs.Length);
+      Logger.Info("agents.Length = " + agents.Length);
       //detect first player slot free
       for (int i = 0; i < TFGame.Players.Length; i++) //todo use everywhere
       {
@@ -87,9 +93,11 @@ namespace TFModFortRiseAIModule
     }
 
     public static void AgentUpdate(Level level) {
+        //Logger.Info("AgentUpdate");
       if (level.LivingPlayers == 0) return;
 
-      for (int i = 0; i < TFGame.PlayerInputs.Length; i++)
+      for (int i = 0; i < TFGame.Players.Length; i++)
+      //for (int i = 0; i < TFGame.PlayerInputs.Length; i++)
       {
         if (!(TFModFortRiseAIModule.CurrentPlayerIs(PlayerType.NAIMod, i)
             && TFModFortRiseAIModule.IsAgentPlaying(i, level)))
