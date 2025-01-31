@@ -27,7 +27,9 @@ namespace TFModFortRiseAIModule {
 
     public static void ctor_patch(On.TowerFall.Level.orig_ctor orig, global::TowerFall.Level self, global::TowerFall.Session session, XmlElement xml)
     {
-      NAIMod.SetAgentLevel(self);
+      if (NAIMod.NAIModEnabled) { 
+        NAIMod.SetAgentLevel(self); //ACTIVATE
+      }
       orig(self, session, xml);
     }
 
@@ -54,10 +56,10 @@ namespace TFModFortRiseAIModule {
 
         //}
 
-        //if (nbUpdate % MyRollcallElement.difficultyLevel["NAI"] == 0)
-        //{
-          NAIMod.AgentUpdate(self);
-        //}
+        if (NAIMod.NAIModEnabled && nbUpdate % MyRollcallElement.difficultyLevel["NAI"] == 0)
+        {
+          NAIMod.AgentUpdate(self); //ACTIVATE
+        }
         //if (AiMod.ModAIEnabled)
         //{
         //Agents.RefreshInputFromAgents(self);
@@ -66,7 +68,7 @@ namespace TFModFortRiseAIModule {
 
         //if (NAIMod.NAIMod.NAIModEnabled)
         //{
-          //NAIMod.AgentUpdate(self);
+        //NAIMod.AgentUpdate(self);
         //}
       }
       else

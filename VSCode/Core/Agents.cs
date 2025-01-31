@@ -18,9 +18,310 @@ namespace TFModFortRiseAIModule
     static List<AgentConnectionRemote> remoteConnections = new List<AgentConnectionRemote>();
     static StateUpdate stateUpdate = new StateUpdate();
     static List<DrawInstruction> draws = new List<DrawInstruction>();
+    static List<int> listPlayerIndexPlaying = new List<int>();
     static int frame;
     static bool levelLoaded;
     static bool scenarioSent;
+    //static DateTime lasttime;
+
+    //TowerFall.ShockCircle
+    static List<String> listEntityToAdd = new List<string>
+    {
+      //"TowerFall.Player",
+
+      //"TowerFall.Lantern",
+      //"TowerFall.Chain",
+      //"TowerFall.Cobwebs",
+      //"TowerFall.LevelTiles",
+      //"TowerFall.DefaultArrow",
+      //"TowerFall.DefaultHat",
+      //"TowerFall.LightFade",
+      //"TowerFall.PlayerCorpse",
+      //"TowerFall.DeathSkull",
+      //"TowerFall.CatchShine",
+      //"TowerFall.TreasureChest",
+      //"TowerFall.BGSkeleton",
+      //"TowerFall.JumpPad",
+      //"TowerFall.CrackedPlatform",
+      //"TowerFall.Spikeball",
+      //"TowerFall.OrbPickup",
+      //"TowerFall.Orb",
+      //"TowerFall.Crown",
+      //"TowerFall.BGBigMushroom",
+      //"TowerFall.CrackedWall",
+      //"TowerFall.ArrowTypePickup",
+      //"TowerFall.FloatText",
+      //"TowerFall.ShieldPickup",
+      //"TowerFall.BombArrow",
+      //"TowerFall.BombParticle",
+      //"TowerFall.Explosion",
+      //"TowerFall.BombPickup",
+      //"TowerFall.LaserArrow",
+      //"TowerFall.MovingPlatform",
+      //"TowerFall.LavaControl",
+      //"TowerFall.Lava",
+      //"TowerFall.WingsPickup",
+      //"TowerFall.Icicle",
+      //"TowerFall.SnowClump",
+      //"TowerFall.Ice",
+      //"TowerFall.PlayerBreath",
+      //"TowerFall.DrillArrow",
+      //"TowerFall.SpeedBootsPickup",
+      //"TowerFall.Miasma",
+      //"TowerFall.KingIntro",
+      //"TowerFall.SwitchBlockControl",
+      //"TowerFall.SwitchBlock",
+      //"TowerFall.LevelEntity",
+      //"TowerFall.ShiftBlock",
+      //"TowerFall.MirrorPickup",
+      //"TowerFall.BoltArrow",
+      //"TowerFall.SmallShock",
+      //"TowerFall.WaterDrop",
+      //"TowerFall.ProximityBlock",
+      //"TowerFall.MoonGlassBlock",
+      //"TowerFall.HotCoals",
+      //"TowerFall.RainDrops",
+      //"TowerFall.LoopPlatform",
+      //"TowerFall.PirateBanner",
+      //"TowerFall.GhostShipWindow",
+      //"TowerFall.RotatePlatform",
+      //"TowerFall.Mud",
+      //"TowerFall.SensorBlock",
+      //"TowerFall.BrambleArrow",
+      //"TowerFall.Brambles",
+      //"TowerFall.CrumbleBlock",
+      //"TowerFall.TriggerArrow",
+      //"TowerFall.PrismArrow",
+      //"TowerFall.CrumbleWall",
+      //"Monocle.ParticleSystem",
+      //"TowerfallAi.Mod.PlayTag",
+    };
+
+    static List<String> listEntityToIgnore = new List<string> {
+      
+        //still freeze with :
+      "TowerFall.Lantern",
+      "TowerFall.Chain",
+      "TowerFall.Cobwebs",
+      "TowerFall.LevelTiles",
+      "TowerFall.DefaultArrow",
+      "TowerFall.DefaultHat",
+      "TowerFall.LightFade",
+      "TowerFall.PlayerCorpse",
+      "TowerFall.DeathSkull",
+      "TowerFall.CatchShine",
+      "TowerFall.TreasureChest",
+      "TowerFall.BGSkeleton",
+      "TowerFall.JumpPad",
+      "TowerFall.CrackedPlatform",
+      "TowerFall.Spikeball",
+      "TowerFall.OrbPickup",
+      "TowerFall.Orb",
+      "TowerFall.Crown",
+      "TowerFall.BGBigMushroom",
+      "TowerFall.CrackedWall",
+      "TowerFall.ArrowTypePickup",
+      "TowerFall.FloatText",
+      "TowerFall.ShieldPickup",
+      "TowerFall.BombArrow",
+      "TowerFall.BombParticle",
+      "TowerFall.Explosion",
+      "TowerFall.BombPickup",
+      "TowerFall.LaserArrow",
+      "TowerFall.MovingPlatform",
+      "TowerFall.LavaControl",
+      "TowerFall.Lava",
+      "TowerFall.WingsPickup",
+      "TowerFall.Icicle",
+      "TowerFall.SnowClump",
+      "TowerFall.Ice",
+      "TowerFall.PlayerBreath",
+      "TowerFall.DrillArrow",
+      "TowerFall.SpeedBootsPickup",
+      "TowerFall.Miasma",
+      "TowerFall.KingIntro",
+      "TowerFall.SwitchBlockControl",
+      "TowerFall.SwitchBlock",
+      "TowerFall.LevelEntity",
+      "TowerFall.ShiftBlock",
+      "TowerFall.MirrorPickup",
+      "TowerFall.BoltArrow",
+      "TowerFall.SmallShock",
+      "TowerFall.WaterDrop",
+      "TowerFall.ProximityBlock",
+      "TowerFall.MoonGlassBlock",
+      "TowerFall.HotCoals",
+      "TowerFall.RainDrops",
+      "TowerFall.LoopPlatform",
+      "TowerFall.PirateBanner",
+      "TowerFall.GhostShipWindow",
+      "TowerFall.RotatePlatform",
+      "TowerFall.Mud",
+      "TowerFall.SensorBlock",
+      "TowerFall.BrambleArrow",
+      "TowerFall.Brambles",
+      "TowerFall.CrumbleBlock",
+      "TowerFall.TriggerArrow",
+      "TowerFall.PrismArrow",
+      "TowerFall.CrumbleWall",
+      "Monocle.ParticleSystem",
+      //"TowerfallAi.Mod.PlayTag",
+      "TowerFall.FeatherArrow",
+"TowerFall.Prism",
+"TowerFall.PrismParticle",
+"TowerFall.CrumbleWallChunk",
+"TowerFall.PrismVanish",
+"TowerFall.ShockCircle",
+
+      ////still freeze with :
+      //"TowerFall.Lantern",
+      //"TowerFall.Chain",
+      //"TowerFall.Cobwebs",
+      //"TowerFall.LevelTiles",
+      ////"TowerFall.DefaultArrow",
+      //"TowerFall.DefaultHat",
+      //"TowerFall.LightFade",
+      //"TowerFall.PlayerCorpse",
+      //"TowerFall.DeathSkull",
+      //"TowerFall.CatchShine",
+      ////"TowerFall.TreasureChest",
+      //"TowerFall.BGSkeleton",
+      ////"TowerFall.JumpPad",
+      ////"TowerFall.CrackedPlatform",
+      ////"TowerFall.Spikeball",
+      ////"TowerFall.OrbPickup",
+      ////"TowerFall.Orb",
+      //"TowerFall.Crown",
+      //"TowerFall.BGBigMushroom",
+      ////"TowerFall.CrackedWall",
+      ////"TowerFall.ArrowTypePickup",
+      //"TowerFall.FloatText",
+      ////"TowerFall.ShieldPickup",
+      ////"TowerFall.BombArrow",
+      //"TowerFall.BombParticle",
+      //"TowerFall.Explosion",
+      ////"TowerFall.BombPickup",
+      ////"TowerFall.LaserArrow",
+      ////"TowerFall.MovingPlatform",
+      //"TowerFall.LavaControl",
+      //"TowerFall.Lava",
+      ////"TowerFall.WingsPickup",
+      ////"TowerFall.Icicle",
+      ////"TowerFall.SnowClump",
+      //"TowerFall.Ice",
+      //"TowerFall.PlayerBreath",
+      ////"TowerFall.DrillArrow",
+      ////"TowerFall.SpeedBootsPickup",
+      //"TowerFall.Miasma",
+      //"TowerFall.KingIntro",
+      //"TowerFall.SwitchBlockControl",
+      ////"TowerFall.SwitchBlock",
+      //"TowerFall.LevelEntity",
+      ////"TowerFall.ShiftBlock",
+      ////"TowerFall.MirrorPickup",
+      ////"TowerFall.BoltArrow",
+      //"TowerFall.SmallShock",
+      //"TowerFall.WaterDrop",
+      ////"TowerFall.ProximityBlock",
+      ////"TowerFall.MoonGlassBlock",
+      //"TowerFall.HotCoals",
+      //"TowerFall.RainDrops",
+      ////"TowerFall.LoopPlatform",
+      //"TowerFall.PirateBanner",
+      //"TowerFall.GhostShipWindow",
+      ////"TowerFall.RotatePlatform",
+      //"TowerFall.Mud",
+      ////"TowerFall.SensorBlock",
+      ////"TowerFall.BrambleArrow",
+      ////"TowerFall.Brambles",
+      ////"TowerFall.CrumbleBlock",
+      ////"TowerFall.TriggerArrow",
+      ////"TowerFall.PrismArrow",
+      ////"TowerFall.CrumbleWall",
+      //"Monocle.ParticleSystem",
+      ////"TowerfallAi.Mod.PlayTag",
+
+      //from doc
+      //amaranthBoss
+      //amaranthShot
+      //arrow
+      //bat
+      //batBomb
+      //batSuperBomb
+      //bird
+      //birdman
+      //brambles
+      //cataclysmBlade
+      //cataclysmBlock
+      //cataclysmBullet
+      //cataclysmEye
+      //cataclysmMissile
+      //cataclysmShieldOrb
+      //chain
+      //chest
+      //crackedPlatform
+      //crackedWall
+      //crown
+      //crumbleBlock
+      //crumbleWall
+      //cultist
+      //cyclopsEye
+      //cyclopsFist
+      //cyclopsPlatform
+      //cyclopsShot
+      //dreadEye
+      //dreadFlower
+      //dreadTentacle
+      //dummy
+      //enemyAttack
+      //evilCrystal
+      //exploder
+      //explosion
+      //fakeWall
+      //flamingSkull
+      //floorMiasma
+      //ghost
+      //ghostPlatform
+      //graniteBlock
+      //hat
+      //hotCoals
+      //ice
+      //icicle
+      //jumpPad
+      //kingReaper
+      //kingReaperBeam
+      //kingReaperBomb
+      //kingReaperCrystal
+      //lantern
+      //laserArrow
+      //lava
+      //loopPlatform
+      //miasma
+      //mirrorPickup
+      //mole
+      //moonGlassBlock
+      //movingPlatform
+      //mud
+      //orb
+      //player
+      //playerCorpse
+      //portal
+      //prism
+      //prismArrow
+      //proximityBlock
+      //purpleArcherPortal
+      //sensorBlock
+      //shiftBlock
+      //shockCircle
+      //slime
+      //spikeball
+      //switchBlock
+      //technoMage
+      //technoMissile
+      //tornado
+      //worm
+
+    };    
     public const string InputName = "TFModFortRiseAIModule.AgentConnectionRemote";
 
     public static void Init() { }
@@ -133,9 +434,14 @@ namespace TFModFortRiseAIModule
         AgentConnections.Add(agentConnection);
         TFModFortRiseAIModule.nbPlayerType[indexAgent]++;
         AiMod.agents[indexAgent] = agentConnection;
-        if (TFModFortRiseAIModule.currentPlayerType[indexAgent] == PlayerType.NAIMod)
+        //Logger.Info("agent: currentPlayerType["+ indexAgent + "]" + TFModFortRiseAIModule.currentPlayerType[indexAgent]);
+        if (TFModFortRiseAIModule.currentPlayerType[indexAgent] == PlayerType.NAIMod ||
+            TFModFortRiseAIModule.currentPlayerType[indexAgent] == PlayerType.None)
         {
+        //Logger.Info("in if");
           TFModFortRiseAIModule.currentPlayerType[indexAgent] = PlayerType.AiMod;
+          TFGame.PlayerInputs[i] = AiMod.agents[i];
+          //Logger.Info("currentPlayerType["+ indexAgent + "]" + TFModFortRiseAIModule.currentPlayerType[indexAgent]);
         }
         indexAgent++;
       }
@@ -181,16 +487,31 @@ namespace TFModFortRiseAIModule
 
       List<Task> tasks = new List<Task>();
 
+      List<Entity> listPlayer = level.Session.CurrentLevel[GameTags.Player];
+      listPlayerIndexPlaying.Clear();
+      for (var i = 0; i < listPlayer.Count; i++)
+      {
+        // save player at the first frame, because when player died, the player will change in session , died player disappear
+        listPlayerIndexPlaying.Add(((Player)listPlayer[i]).PlayerIndex);
+      }
+
       // Send all state inits.
       for (int i = 0; i < AgentConnections.Count; i++) {
         var connection = AgentConnections[i];
         if (connection == null) continue;
-        if (!InputName.Equals(TFGame.PlayerInputs[i].GetType().ToString()))
+
+        if (!listPlayerIndexPlaying.Contains(i))
         {
           string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index });
           Logger.Info("Sending StateNotPlaying to agent {0}.".Format(connection.index));
           connection.Send(notPlayingMessage, frame);
         }
+        //if (!InputName.Equals(TFGame.PlayerInputs[i].GetType().ToString()))
+        //{
+        //  string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index });
+        //  Logger.Info("Sending StateNotPlaying to agent {0}.".Format(connection.index));
+        //  connection.Send(notPlayingMessage, frame);
+        //}
         else
         {
           string initMessage = JsonConvert.SerializeObject(new StateInit { index = connection.index });
@@ -214,17 +535,19 @@ namespace TFModFortRiseAIModule
       for (int i = 0; i < AgentConnections.Count; i++) {
         var connection = AgentConnections[i];
         if (connection == null) continue;
-        if (!InputName.Equals(TFGame.PlayerInputs[i].GetType().ToString()))
-        {
-          string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index });
-          Logger.Info("Sending StateNotPlaying to agent {0}.".Format(connection.index));
-          connection.Send(notPlayingMessage, frame);
-        }
-        else
-        {
+        //if (!InputName.Equals(TFGame.PlayerInputs[i].GetType().ToString()))
+        //{
+        //  // NEw : don't resend a StateNotPlaying, already done above
+        //  //string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index });
+        //  //Logger.Info("Sending StateNotPlaying to agent {0}.".Format(connection.index));
+        //  //connection.Send(notPlayingMessage, frame);
+        //  continue;
+        //}
+        //else
+        //{
           Logger.Info("Notify level load to agent {0}.".Format(connection.index));
           connection.Send(scenarioMessage, frame);
-        }
+        //}
         var task = Task.Run(async () => {
           Message reply = await connection.ReceiveAsync(AiMod.Config.agentTimeout, cancelAgentCommunication);
           if (!reply.success) {
@@ -309,6 +632,22 @@ namespace TFModFortRiseAIModule
       }
     }
 
+
+    //public static bool isPlaying(int playerIndex, List<Entity> listPlayer) {
+    //  for (var i = 0; i < listPlayer.Count; i++)
+    //  {
+    //    try
+    //    {
+    //      Logger.Info("listPlayer[i].GetType().ToString() = ");
+    //      Logger.Info(listPlayer[i].GetType().ToString());
+    //      if (((Player)listPlayer[i]).PlayerIndex == playerIndex) return true;
+    //    } catch (Exception e) {
+    //      Logger.Info(e.Message);
+    //    }
+    //  }
+    //  return false;
+    //}
+
     public static void RefreshInputFromAgents(Level level) {
 
         //Logger.Info("RefreshInputFromAgents");
@@ -345,16 +684,37 @@ namespace TFModFortRiseAIModule
       List<Task> tasks = new List<Task>();
 
       // Start receiving all messages
+      //end only to player playing in the level
+      //if (frame == 0)
+      //{
+      //  List<Entity> listPlayer = level.Session.CurrentLevel[GameTags.Player];
+      //  listPlayerIndexPlaying.Clear();
+      //  for (var i = 0; i < listPlayer.Count; i++)
+      //  {
+      //    // save player at the first frame, because when player died, the player will change in session , died player disappear
+      //    listPlayerIndexPlaying.Add(((Player)listPlayer[i]).PlayerIndex);
+      //  }
+      //}
+            
       for (int i = 0; i< AgentConnections.Count; i++) {
 
         AgentConnection connection = AgentConnections[i];
         if (connection == null) continue;
 
-        if (!InputName.Equals(TFGame.PlayerInputs[i].GetType().ToString()))
-        {
+        //send state not playing only once for python AI at the first frame
+        if (!listPlayerIndexPlaying.Contains(i)) { 
+          //if (frame == 0) {
           string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index, id = stateUpdate.id });
           connection.Send(notPlayingMessage, frame);
+          //} else {
+          //  continue;
+          //}
         }
+        //if (!InputName.Equals(TFGame.PlayerInputs[i].GetType().ToString()))
+        //{
+        //  string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index, id = stateUpdate.id });
+        //  connection.Send(notPlayingMessage, frame);
+        //}
         else
         {
           connection.Send(serializedStateUpdate, frame);
@@ -524,6 +884,37 @@ namespace TFModFortRiseAIModule
 
       foreach (var ent in level.Layers[0].Entities) {
         Type type = ent.GetType();
+        // TODO inspect, no freeze when oly player, some entity can do freeze
+
+        //DateTime now = DateTime.Now;
+        //TimeSpan span = now - lasttime;
+        //bool throwE = false;
+        ////Logger.Info("1.now - lasttime = " + span.TotalMilliseconds);
+        //if (span > new TimeSpan(0,0,0,0,200)) { 
+        //  Logger.Info("2.now - lasttime = " + span.TotalMilliseconds);
+        //  throwE = true;
+        //}
+        //lasttime = DateTime.Now;
+
+        if (type.ToString() != "TowerFall.Player" && !listEntityToIgnore.Contains(type.ToString()))
+        {
+          //get entity to ignore on log
+          //Logger.Info(type.ToString());
+          listEntityToIgnore.Add(type.ToString());
+          // cd "/c/Program Files (x86)/Steam/steamapps/common/TowerFall/modcompilkenobi/logs"; grep "1 ==" *
+          // grep "1 ==" *
+          Logger.Info("==" + type.ToString());
+        }
+        if (listEntityToIgnore.Contains(type.ToString())) continue; //ignore all except player, TODO modify
+        //if (throwE) throw new Exception("too much time");
+        //if (!listEntityToAdd.Contains(type.ToString())) {
+        //  //get entity to ignore on log
+        //  //Logger.Info(type.ToString());
+        //  listEntityToAdd.Add(type.ToString());
+        //  //Logger.Info(type.ToString());
+        //}
+
+        //if (!"TowerFall.Player".Equals(type.ToString())) continue;
         Func<Entity, StateEntity> getState;
         if (!getStateFunctions.TryGetValue(type, out getState)) continue;
 

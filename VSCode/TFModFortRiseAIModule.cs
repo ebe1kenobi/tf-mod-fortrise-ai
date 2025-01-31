@@ -153,10 +153,18 @@ namespace TFModFortRiseAIModule
         //for (var i = 0; i < TFGame.PlayerInputs.Length; i++)
         {
           //Logger.Info("i=" + i);
-          if (TFGame.PlayerInputs[i] == null) continue;
+          //if (TFGame.PlayerInputs[i] == null) continue;
+          if (TFGame.PlayerInputs[i] == null)
+          {
+            currentPlayerType[i] = PlayerType.None;
+            //Logger.Info("currentPlayerType["+ i+"]" + currentPlayerType[i]);
+
+            continue;
+          }
           nbPlayerType[i]++;
           currentPlayerType[i] = PlayerType.Human;
           savedHumanPlayerInput[i] = TFGame.PlayerInputs[i];
+            //Logger.Info("currentPlayerType["+ i+"]" + currentPlayerType[i]);
         }
         isHumanPlayerTypeSaved = true;
       }
@@ -171,10 +179,10 @@ namespace TFModFortRiseAIModule
 
 
       //////////////////////////////////////
-      if (TFGame.GameLoaded && !NAIMod.isAgentReady && isHumanPlayerTypeSaved)
+      if (NAIMod.NAIModEnabled && TFGame.GameLoaded && !NAIMod.isAgentReady && isHumanPlayerTypeSaved)
       {
         //Logger.Info("call CreateAgent()");
-        NAIMod.CreateAgent(); // TODO
+        NAIMod.CreateAgent(); // TODO //ACTIVATE
       }
       //////////////////////////////////////
 

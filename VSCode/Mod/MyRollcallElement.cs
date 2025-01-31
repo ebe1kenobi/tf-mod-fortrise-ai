@@ -190,10 +190,10 @@ namespace TFModFortRiseAIModule
           else if (TFModFortRiseAIModule.CurrentPlayerIs(PlayerType.AiMod, playerIndex))
           {
             upArrow[playerIndex].Visible = true;
-            //if (NAIMod.NAIModEnabled)
-              downArrow[playerIndex].Visible = true;  
-            //else
-              //downArrow[playerIndex].Visible = false;  
+            if (NAIMod.NAIModEnabled)
+              downArrow[playerIndex].Visible = true;
+            else
+              downArrow[playerIndex].Visible = false;  
           }
           else if (TFModFortRiseAIModule.CurrentPlayerIs(PlayerType.NAIMod, playerIndex))
           {
@@ -243,8 +243,12 @@ namespace TFModFortRiseAIModule
     }
     public static int NotJoinedUpdate_patch(On.TowerFall.RollcallElement.orig_NotJoinedUpdate orig, global::TowerFall.RollcallElement self)
     {
+      //Logger.Info("NotJoinedUpdate_patch");
       var dynData = DynamicData.For(self);
+
+      //Logger.Info("TFModFortRiseAIModule.currentPlayerType["+ (int)dynData.Get("playerIndex")+"]" + TFModFortRiseAIModule.currentPlayerType[(int)dynData.Get("playerIndex")]);
       int playerIndex = (int)dynData.Get("playerIndex");
+    
       var input = DynamicData.For(dynData.Get("input"));
       if (input == null)
         return 0;
@@ -281,8 +285,8 @@ namespace TFModFortRiseAIModule
 
         // Move down
         if (MenuDown
-            && (int)TFModFortRiseAIModule.currentPlayerType[playerIndex] < (int)PlayerType.NAIMod)
-            //&& NAIMod.NAIModEnabled && (int)TFModFortRiseAIModule.currentPlayerType[playerIndex] < (int)PlayerType.NAIMod)
+            //&& (int)TFModFortRiseAIModule.currentPlayerType[playerIndex] < (int)PlayerType.NAIMod)
+            && NAIMod.NAIModEnabled && (int)TFModFortRiseAIModule.currentPlayerType[playerIndex] < (int)PlayerType.NAIMod)
         {
           TFModFortRiseAIModule.currentPlayerType[playerIndex] = (PlayerType)(int)TFModFortRiseAIModule.currentPlayerType[playerIndex] + 1;
         } else if (MenuDown

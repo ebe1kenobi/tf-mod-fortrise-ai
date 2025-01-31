@@ -23,7 +23,7 @@ namespace TFModFortRiseAIModule
     public static void ParseArgs(string[] args)
     {
       Logger.Info("NAIMod.ParseArgs");
-      NAIModEnabled = true;
+      NAIModEnabled = false; //ACTIVATE
       //NAIModNoKeyboardEnabled = true;
       //  for (int i = 0; i < args.Length; i++)
       //  {
@@ -41,7 +41,7 @@ namespace TFModFortRiseAIModule
 
     public static void Update(Action<GameTime> originalUpdate)
     {
-      if (TFGame.GameLoaded && !isAgentReady) {
+      if (NAIModEnabled &&  TFGame.GameLoaded && !isAgentReady) {
         CreateAgent();
       }
       try
