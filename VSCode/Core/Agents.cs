@@ -804,15 +804,19 @@ namespace TFModFortRiseAIModule
 
       stateUpdate.entities.Clear();
 
-      foreach (var ent in level.Layers[0].Entities) {
+      foreach (var ent in level.Layers[0].Entities)
+      {
         Type type = ent.GetType();
-        if (type.ToString() != "TowerFall.Player" && !listEntityToIgnore.Contains(type.ToString()))
-        {
-          //get entity to ignore on log
-          listEntityToIgnore.Add(type.ToString());
-          // cd "/c/Program Files (x86)/Steam/steamapps/common/TowerFall/modcompilkenobi/logs"; grep "1 ==" *
+        if (level.Session.MatchSettings.Mode != Modes.Quest && level.Session.MatchSettings.Mode != Modes.DarkWorld) { 
+          if (type.ToString() != "TowerFall.Player" && !listEntityToIgnore.Contains(type.ToString()))
+          {
+            //get entity to ignore on log
+            listEntityToIgnore.Add(type.ToString());
+            // cd "/c/Program Files (x86)/Steam/steamapps/common/TowerFall/modcompilkenobi/logs"; grep "1 ==" *
+          }
+          if (listEntityToIgnore.Contains(type.ToString())) continue; //ignore all except player, TODO modify
         }
-        if (listEntityToIgnore.Contains(type.ToString())) continue; //ignore all except player, TODO modify
+
         Func<Entity, StateEntity> getState;
         if (!getStateFunctions.TryGetValue(type, out getState)) continue;
 

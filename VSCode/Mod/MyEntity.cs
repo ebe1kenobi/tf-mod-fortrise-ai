@@ -1,9 +1,9 @@
-﻿using System;
+﻿using MonoMod.Utils;
+using System;
 using System.Collections.Generic;
 using Monocle;
 using Microsoft.Xna.Framework;
 using TowerFall;
-using System.Reflection;
 
 namespace TFModFortRiseAIModule {
   public class ModEntity : Entity {
@@ -98,13 +98,18 @@ namespace TFModFortRiseAIModule {
 
       if (ent is Enemy) {
         Enemy enemy = (Enemy)ent;
-        
+
+        var dynData = DynamicData.For(enemy);
+        string[] value;
+        dynData.TryGet<string[]>("names", out value);
+        dynData.Dispose();
         state.isEnemy = true;
         state.canHurt = enemy.CanHurt;
         state.canBounceOn = enemy.CanBounceOn;
         state.isDead = enemy.IsDead();
         state.facing = (int)enemy.Facing;
-        state.state = ((string[])Util.GetFieldValue("names", typeof(Enemy), enemy, BindingFlags.Public | BindingFlags.Instance))[enemy.State].FirstLower();
+        state.state = value != null ? value[enemy.State].FirstLower() : "-";
+        //state.state = ((string[])Util.GetFieldValue("names", typeof(Enemy), enemy, BindingFlags.Public | BindingFlags.Instance))[enemy.State].FirstLower();
       }
     }
 
