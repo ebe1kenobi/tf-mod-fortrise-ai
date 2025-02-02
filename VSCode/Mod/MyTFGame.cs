@@ -44,18 +44,11 @@ namespace TFModFortRiseAIModule {
       {
         self.IsFixedTimeStep = true;
       }
-
-      //TFModFortRiseAIModule.IsModPlaytagExists = RiseCore.IsModExists("PlayTag");
-      //TFModFortRiseAIModule.IsModEigthPlayerExists = RiseCore.IsModExists("WiderSetMod");
-      //Logger.Info("IsModPlaytagExists = " + TFModFortRiseAIModule.IsModPlaytagExists);
-      //Logger.Info("IsModEigthPlayerExists = " + TFModFortRiseAIModule.IsModEigthPlayerExists);
-      //Logger.Info("TFGame.PlayerInputs.Length = " + TFGame.PlayerInputs.Length);
-      //Logger.Info("TFGame.Player.Length = " + TFGame.Players.Length);
     }
 
     public static void Load_patch(On.TowerFall.TFGame.orig_Load orig) {
       orig();
-      TaskHelper.Run("waiting AI python to connect", () =>
+      TaskHelper.Run("WAITING FOR THE AI PYTHON TO CONNECT", () =>
       {
         try
         {
@@ -77,9 +70,7 @@ namespace TFModFortRiseAIModule {
     }
 
     public static void Initialize_patch(On.TowerFall.TFGame.orig_Initialize orig, global::TowerFall.TFGame self) {
-      //AiMod.PreGameInitialize();
       orig(self);
-      //AiMod.PostGameInitialize();
     }
 
     public static void Update_patch(On.TowerFall.TFGame.orig_Update orig, global::TowerFall.TFGame self, GameTime gameTime) {

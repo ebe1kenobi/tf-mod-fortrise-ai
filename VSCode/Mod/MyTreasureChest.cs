@@ -1,6 +1,4 @@
-﻿using FortRise;
-using Microsoft.Xna.Framework;
-using MonoMod.Utils;
+﻿using MonoMod.Utils;
 using TowerFall;
 namespace TFModFortRiseAIModule {
   public static class MyTreasureChest {
@@ -13,7 +11,6 @@ namespace TFModFortRiseAIModule {
 
       var dynData = DynamicData.For(ent);
       aiState.chestType = dynData.Get("type").ToString().FirstLower();
-      //aiState.chestType = ent.type.ToString().FirstLower();
 
       dynData.Dispose();
       return aiState;

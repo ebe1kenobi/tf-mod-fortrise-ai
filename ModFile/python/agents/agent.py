@@ -11,13 +11,14 @@ _VERBOSE = 0
 _TIMEOUT = 10
 
 class Agent:
-  def __init__(self, connection: Connection):
+  def __init__(self, id : id,  connection: Connection):
     # logging.info('agent.__init__')
     self.state_init: Mapping[str, Any] = {}
     self.state_scenario: Mapping[str, Any] = {}
     self.state_update: Mapping[str, Any] = {}
     self.pressed = set()
     self.connection = connection
+    self.id = id
     self.moves = []
     self.my_state = []
     self.players = []
@@ -36,7 +37,7 @@ class Agent:
     # logging.info('agent.act')
 
     if game_state['type'] == 'notplaying':
-      # logging.info('game_state.type = ' + str(game_state['type']))
+      logging.info(str(id) + ': game_state.type = ' + str(game_state['type']))
       # 'notplaying' is sent every time a match series starts for an agents not selected to play
       # Acknowledge the init message.
       self.connection.send_json(dict(type='result', success=True, id = game_state['id']))
@@ -45,7 +46,7 @@ class Agent:
     # There are three main types to handle, 'init', 'scenario' and 'update'.
     # Check 'type' to handle each accordingly.
     if game_state['type'] == 'init':
-      # logging.info('game_state.type = ' + str(game_state['type']))
+      logging.info(str(id) + ': game_state.type = ' + str(game_state['type']))
 
       # 'init' is sent every time a match series starts. It contains information about the players and teams.
       # The seed is based on the bot index so each bots acts differently.
@@ -58,7 +59,7 @@ class Agent:
 
     # Add game mode # AiMod.Config.mode == GameModes.Quest
     if game_state['type'] == 'scenario':
-      # logging.info('game_state.type = ' + str(game_state['type']))
+      logging.info(str(id) + ': game_state.type = ' + str(game_state['type']))
       # 'scenario' informs your bot about the current state of the ground. Store this information
       # to use in all subsequent loops. (This example bot doesn't use the shape of the scenario)
       self.state_scenario = game_state
@@ -70,7 +71,7 @@ class Agent:
       return True
 
     if game_state['type'] == 'update':
-      # logging.info('game_state.type = ' + str(game_state['type']))
+      # logging.info(str(id) + ': game_state.type = ' + str(game_state['type']))
       # 'update' informs the state of entities in the map (players, arrows, enemies, etc).
       self.state_update = game_state
 

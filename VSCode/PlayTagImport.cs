@@ -1,5 +1,4 @@
 ﻿using System;
-using FortRise;
 using TowerFall;
 using MonoMod.ModInterop;
 

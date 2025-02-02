@@ -1,6 +1,4 @@
-﻿using FortRise;
-using Microsoft.Xna.Framework;
-using TowerFall;
+﻿using TowerFall;
 using MonoMod.Utils;
 
 namespace TFModFortRiseAIModule {
@@ -11,7 +9,6 @@ namespace TFModFortRiseAIModule {
 
       var dynData = DynamicData.For(ent);
       aiState.type = ConversionTypes.CultistTypes.GetB((TowerFall.Cultist.CultistTypes)dynData.Get("type"));
-      //aiState.type = ConversionTypes.CultistTypes.GetB(ent.type);
       ExtEntity.SetAiState(ent, aiState);
       dynData.Dispose();
       return aiState;

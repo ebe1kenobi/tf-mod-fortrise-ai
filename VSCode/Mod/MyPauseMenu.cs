@@ -1,7 +1,4 @@
 ﻿using System;
-using FortRise;
-using Microsoft.Xna.Framework;
-using TowerFall;
 
 
 namespace TFModFortRiseAIModule {
@@ -44,7 +41,6 @@ namespace TFModFortRiseAIModule {
         return;
       }
       
-      //Util.GetAction("$original_VersusMatchSettingsAndSave", this)();
       orig(self);
     }
 
@@ -54,7 +50,6 @@ namespace TFModFortRiseAIModule {
         return;
       }
 
-      //Util.GetAction("$original_Quit", this)();
       orig(self);
     }
 
@@ -64,7 +59,6 @@ namespace TFModFortRiseAIModule {
         return;
       }
 
-      //Util.GetAction("$original_VersusMatchSettings", this)();
       orig(self);
     }
 
@@ -75,7 +69,6 @@ namespace TFModFortRiseAIModule {
         return;
       }
 
-      //Util.GetAction("$original_VersusArcherSelect", this)();
       orig(self);
     }
 
@@ -85,7 +78,6 @@ namespace TFModFortRiseAIModule {
         return;
       }
 
-      //Util.GetAction("$original_QuestMap", this)();
       orig(self);
     }
 
@@ -95,7 +87,6 @@ namespace TFModFortRiseAIModule {
         return;
       }
 
-      //Util.GetAction("$original_VersusRematch", this)();
       orig(self);
     }
 
@@ -105,7 +96,6 @@ namespace TFModFortRiseAIModule {
         return;
       }
 
-      //Util.GetAction("$original_QuestRestart", this)();
       orig(self);
     }
 
@@ -116,7 +106,6 @@ namespace TFModFortRiseAIModule {
         return;
       }
 
-      //Util.GetAction("$original_QuestMapAndSave", this)();
       orig(self);
     }
 
@@ -126,7 +115,6 @@ namespace TFModFortRiseAIModule {
         return;
       }
 
-      //Util.GetAction("$original_QuitAndSave", this)();
       orig(self);
     }
   }

@@ -9,18 +9,5 @@ namespace TFModFortRiseAIModule
 {
   public class TFModFortRiseAISettings: ModuleSettings
   {
-    //public const int AIPython= 0;
-    //public const int NAI = 1;
-    //[SettingsOptions("AI Python", "NAI")]
-    //public int AIMode;
-
-    //[SettingsNumber(1, 20)]
-    //public int BaronLivesCount = 3;
-
-    //[SettingsName("All Trigger Bramble Arrow")]
-    //public bool AllTriggerBrambleArrow;
-
-    
-
   }
 }

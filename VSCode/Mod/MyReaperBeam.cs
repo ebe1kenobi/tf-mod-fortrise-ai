@@ -1,5 +1,4 @@
-﻿using FortRise;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using TowerFall;
 
 namespace TFModFortRiseAIModule {
@@ -9,9 +8,7 @@ namespace TFModFortRiseAIModule {
       var aiState = new StateReaperBeam { type = "kingReaperBeam" };
       ExtEntity.SetAiState(ent, aiState);
       aiState.canHurt = ent.Collidable;
-      //TODO test GetPrivateFieldValue 
       Vector2 normal = (Vector2)Util.GetPrivateFieldValue("normal", ent);
-      //Vector2 normal = (Vector2)Util.GetPublicFieldValue("normal", ent);
       aiState.dir = new Vec2 {
         x = normal.X,
         y = normal.Y

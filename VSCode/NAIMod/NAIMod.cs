@@ -22,21 +22,7 @@ namespace TFModFortRiseAIModule
     
     public static void ParseArgs(string[] args)
     {
-      Logger.Info("NAIMod.ParseArgs");
       NAIModEnabled = false; //ACTIVATE
-      //NAIModNoKeyboardEnabled = true;
-      //  for (int i = 0; i < args.Length; i++)
-      //  {
-      //    //Always enabled in compil
-      //    //if (args[i] == "--nonativeaimod")
-      //    //{
-      //    //  NAIModEnabled = false;
-      //    //}
-      //    if (args[i] == "--nonativeaimodkeyboard")
-      //    {
-      //      NAIModNoKeyboardEnabled = false;
-      //    }
-      //  }
     }
 
     public static void Update(Action<GameTime> originalUpdate)
@@ -59,10 +45,6 @@ namespace TFModFortRiseAIModule
 
     public static void CreateAgent()
     {
-      Logger.Info("TFGame.PlayerInputs.Length = " + TFGame.PlayerInputs.Length);
-      Logger.Info("TFGame.Player.Length = " + TFGame.Players.Length);
-      Logger.Info("AgentInputs.Length = " + AgentInputs.Length);
-      Logger.Info("agents.Length = " + agents.Length);
       //detect first player slot free
       for (int i = 0; i < TFGame.Players.Length; i++) //todo use everywhere
       {
@@ -93,11 +75,9 @@ namespace TFModFortRiseAIModule
     }
 
     public static void AgentUpdate(Level level) {
-        //Logger.Info("AgentUpdate");
       if (level.LivingPlayers == 0) return;
 
       for (int i = 0; i < TFGame.Players.Length; i++)
-      //for (int i = 0; i < TFGame.PlayerInputs.Length; i++)
       {
         if (!(TFModFortRiseAIModule.CurrentPlayerIs(PlayerType.NAIMod, i)
             && TFModFortRiseAIModule.IsAgentPlaying(i, level)))

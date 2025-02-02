@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Input;
 using Monocle;
 using System;
-using FortRise;
 using TowerFall;
 
 namespace TFModFortRiseAIModule

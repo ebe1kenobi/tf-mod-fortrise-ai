@@ -18,11 +18,10 @@ namespace TFModFortRiseAIModule
     static List<AgentConnectionRemote> remoteConnections = new List<AgentConnectionRemote>();
     static StateUpdate stateUpdate = new StateUpdate();
     static List<DrawInstruction> draws = new List<DrawInstruction>();
-    static List<int> listPlayerIndexPlaying = new List<int>();
+    static List<int> listPlayerAIIndexPlaying = new List<int>();
     static int frame;
     static bool levelLoaded;
     static bool scenarioSent;
-    //static DateTime lasttime;
 
     //TowerFall.ShockCircle
     static List<String> listEntityToAdd = new List<string>
@@ -363,22 +362,7 @@ namespace TFModFortRiseAIModule
     public static int getNumberOfSlotOpen(int nbHuman)
     {
         int numberOfSlotOpen = 0;
-
-
-        //if (AiMod.ModAITraining)
-        //{
-          //for training, we count only the human from the config
-          //numberOfSlotOpen = TFGame.PlayerInputs.Length; //todo getplayer 8 or 4
-          numberOfSlotOpen = TFGame.Players.Length; //todo getplayer 8 or 4
-          //numberOfSlotOpen = TFModFortRiseAIModule.IsModEigthPlayerExists ? 8 : 4; 
-      
-        //}
-        //  else
-        //  {
-        //    numberOfSlotOpen = TFGame.PlayerInputs.Length; //todo getplayer 8 or 4
-        //                                                   //for the normal game, we count the number of joystick connected
-        //}
-
+        numberOfSlotOpen = TFGame.Players.Length; //todo getplayer 8 or 4
         return numberOfSlotOpen;
     }
 
@@ -396,18 +380,8 @@ namespace TFModFortRiseAIModule
       else
       {
         indexAgent = TFGame.Players.Length - nbSlotOpen;
-        //indexAgent = TFGame.PlayerInputs.Length - nbSlotOpen;
-        //indexAgent = (TFModFortRiseAIModule.IsModEigthPlayerExists ? 8 : 4) - nbSlotOpen;
        
       }
-      //int maxPlayer = 4;
-      //if (TF8PlayerMod.TF8PlayerMod.Mod8PEnabled)
-      //{
-      //  maxPlayer = 8;
-      //  TFGame.Players = new bool[maxPlayer];
-      //}
-
-      //for (int i = 0; i < agentConfigs.Count && i < TFGame.PlayerInputs.Length; i++)
       for (int i = 0; i < agentConfigs.Count && i < TFGame.Players.Length; i++)
       {
         AgentConfig agentConfig = agentConfigs[i];
@@ -434,14 +408,11 @@ namespace TFModFortRiseAIModule
         AgentConnections.Add(agentConnection);
         TFModFortRiseAIModule.nbPlayerType[indexAgent]++;
         AiMod.agents[indexAgent] = agentConnection;
-        //Logger.Info("agent: currentPlayerType["+ indexAgent + "]" + TFModFortRiseAIModule.currentPlayerType[indexAgent]);
         if (TFModFortRiseAIModule.currentPlayerType[indexAgent] == PlayerType.NAIMod ||
             TFModFortRiseAIModule.currentPlayerType[indexAgent] == PlayerType.None)
         {
-        //Logger.Info("in if");
           TFModFortRiseAIModule.currentPlayerType[indexAgent] = PlayerType.AiMod;
           TFGame.PlayerInputs[i] = AiMod.agents[i];
-          //Logger.Info("currentPlayerType["+ indexAgent + "]" + TFModFortRiseAIModule.currentPlayerType[indexAgent]);
         }
         indexAgent++;
       }
@@ -488,11 +459,13 @@ namespace TFModFortRiseAIModule
       List<Task> tasks = new List<Task>();
 
       List<Entity> listPlayer = level.Session.CurrentLevel[GameTags.Player];
-      listPlayerIndexPlaying.Clear();
+      listPlayerAIIndexPlaying.Clear();
       for (var i = 0; i < listPlayer.Count; i++)
       {
         // save player at the first frame, because when player died, the player will change in session , died player disappear
-        listPlayerIndexPlaying.Add(((Player)listPlayer[i]).PlayerIndex);
+        if (TFModFortRiseAIModule.currentPlayerType[((Player)listPlayer[i]).PlayerIndex] == PlayerType.Human) continue;
+
+        listPlayerAIIndexPlaying.Add(((Player)listPlayer[i]).PlayerIndex);
       }
 
       // Send all state inits.
@@ -500,18 +473,10 @@ namespace TFModFortRiseAIModule
         var connection = AgentConnections[i];
         if (connection == null) continue;
 
-        if (!listPlayerIndexPlaying.Contains(i))
+        if (!listPlayerAIIndexPlaying.Contains(i))
         {
-          string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index });
-          Logger.Info("Sending StateNotPlaying to agent {0}.".Format(connection.index));
-          connection.Send(notPlayingMessage, frame);
+          continue;
         }
-        //if (!InputName.Equals(TFGame.PlayerInputs[i].GetType().ToString()))
-        //{
-        //  string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index });
-        //  Logger.Info("Sending StateNotPlaying to agent {0}.".Format(connection.index));
-        //  connection.Send(notPlayingMessage, frame);
-        //}
         else
         {
           string initMessage = JsonConvert.SerializeObject(new StateInit { index = connection.index });
@@ -535,19 +500,15 @@ namespace TFModFortRiseAIModule
       for (int i = 0; i < AgentConnections.Count; i++) {
         var connection = AgentConnections[i];
         if (connection == null) continue;
-        //if (!InputName.Equals(TFGame.PlayerInputs[i].GetType().ToString()))
-        //{
-        //  // NEw : don't resend a StateNotPlaying, already done above
-        //  //string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index });
-        //  //Logger.Info("Sending StateNotPlaying to agent {0}.".Format(connection.index));
-        //  //connection.Send(notPlayingMessage, frame);
-        //  continue;
-        //}
-        //else
-        //{
-          Logger.Info("Notify level load to agent {0}.".Format(connection.index));
-          connection.Send(scenarioMessage, frame);
-        //}
+
+
+        if (!listPlayerAIIndexPlaying.Contains(i))
+        {
+          continue;
+        }
+
+        Logger.Info("Notify level load to agent {0}.".Format(connection.index));
+        connection.Send(scenarioMessage, frame);
         var task = Task.Run(async () => {
           Message reply = await connection.ReceiveAsync(AiMod.Config.agentTimeout, cancelAgentCommunication);
           if (!reply.success) {
@@ -632,25 +593,8 @@ namespace TFModFortRiseAIModule
       }
     }
 
-
-    //public static bool isPlaying(int playerIndex, List<Entity> listPlayer) {
-    //  for (var i = 0; i < listPlayer.Count; i++)
-    //  {
-    //    try
-    //    {
-    //      Logger.Info("listPlayer[i].GetType().ToString() = ");
-    //      Logger.Info(listPlayer[i].GetType().ToString());
-    //      if (((Player)listPlayer[i]).PlayerIndex == playerIndex) return true;
-    //    } catch (Exception e) {
-    //      Logger.Info(e.Message);
-    //    }
-    //  }
-    //  return false;
-    //}
-
     public static void RefreshInputFromAgents(Level level) {
 
-        //Logger.Info("RefreshInputFromAgents");
       // Game has to be reset at least once in Sandbox mode.
       if (AiMod.Config.mode == GameModes.Sandbox && !IsReset) return;
 
@@ -684,37 +628,15 @@ namespace TFModFortRiseAIModule
       List<Task> tasks = new List<Task>();
 
       // Start receiving all messages
-      //end only to player playing in the level
-      //if (frame == 0)
-      //{
-      //  List<Entity> listPlayer = level.Session.CurrentLevel[GameTags.Player];
-      //  listPlayerIndexPlaying.Clear();
-      //  for (var i = 0; i < listPlayer.Count; i++)
-      //  {
-      //    // save player at the first frame, because when player died, the player will change in session , died player disappear
-      //    listPlayerIndexPlaying.Add(((Player)listPlayer[i]).PlayerIndex);
-      //  }
-      //}
-            
       for (int i = 0; i< AgentConnections.Count; i++) {
 
         AgentConnection connection = AgentConnections[i];
         if (connection == null) continue;
 
         //send state not playing only once for python AI at the first frame
-        if (!listPlayerIndexPlaying.Contains(i)) { 
-          //if (frame == 0) {
-          string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index, id = stateUpdate.id });
-          connection.Send(notPlayingMessage, frame);
-          //} else {
-          //  continue;
-          //}
+        if (!listPlayerAIIndexPlaying.Contains(i)) { 
+          continue;
         }
-        //if (!InputName.Equals(TFGame.PlayerInputs[i].GetType().ToString()))
-        //{
-        //  string notPlayingMessage = JsonConvert.SerializeObject(new StateNotPlaying { index = connection.index, id = stateUpdate.id });
-        //  connection.Send(notPlayingMessage, frame);
-        //}
         else
         {
           connection.Send(serializedStateUpdate, frame);
@@ -884,37 +806,13 @@ namespace TFModFortRiseAIModule
 
       foreach (var ent in level.Layers[0].Entities) {
         Type type = ent.GetType();
-        // TODO inspect, no freeze when oly player, some entity can do freeze
-
-        //DateTime now = DateTime.Now;
-        //TimeSpan span = now - lasttime;
-        //bool throwE = false;
-        ////Logger.Info("1.now - lasttime = " + span.TotalMilliseconds);
-        //if (span > new TimeSpan(0,0,0,0,200)) { 
-        //  Logger.Info("2.now - lasttime = " + span.TotalMilliseconds);
-        //  throwE = true;
-        //}
-        //lasttime = DateTime.Now;
-
         if (type.ToString() != "TowerFall.Player" && !listEntityToIgnore.Contains(type.ToString()))
         {
           //get entity to ignore on log
-          //Logger.Info(type.ToString());
           listEntityToIgnore.Add(type.ToString());
           // cd "/c/Program Files (x86)/Steam/steamapps/common/TowerFall/modcompilkenobi/logs"; grep "1 ==" *
-          // grep "1 ==" *
-          Logger.Info("==" + type.ToString());
         }
         if (listEntityToIgnore.Contains(type.ToString())) continue; //ignore all except player, TODO modify
-        //if (throwE) throw new Exception("too much time");
-        //if (!listEntityToAdd.Contains(type.ToString())) {
-        //  //get entity to ignore on log
-        //  //Logger.Info(type.ToString());
-        //  listEntityToAdd.Add(type.ToString());
-        //  //Logger.Info(type.ToString());
-        //}
-
-        //if (!"TowerFall.Player".Equals(type.ToString())) continue;
         Func<Entity, StateEntity> getState;
         if (!getStateFunctions.TryGetValue(type, out getState)) continue;
 

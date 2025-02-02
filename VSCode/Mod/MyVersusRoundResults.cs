@@ -1,11 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Monocle;
+﻿using Monocle;
 using MonoMod.Utils;
 using System;
-using System.Collections.Generic;
-using TowerFall;
-using FortRise;
-using System.Collections;
 
 namespace TFModFortRiseAIModule
 {
@@ -38,13 +33,11 @@ namespace TFModFortRiseAIModule
         int playerIndex = int.Parse(textText[1].ToString()) - 1;
         if (!TFModFortRiseAIModule.CurrentPlayerIs(PlayerType.Human, playerIndex))
         {
-          //text.text = TFModFortRiseAIModule.GetPlayerTypePlaying(playerIndex) + " " + (playerIndex + 1);
           dynData.Set("text", TFModFortRiseAIModule.GetPlayerTypePlaying(playerIndex) + " " + (playerIndex + 1));
           text.Position.X -= 30;
         }
         else if (text.Position.X != 30)
         {
-          //text.text = TFModFortRiseAIModule.GetPlayerTypePlaying(playerIndex) + " " + (playerIndex + 1);
           dynData.Set("text", TFModFortRiseAIModule.GetPlayerTypePlaying(playerIndex) + " " + (playerIndex + 1));
           text.Position.X -= 30;
         }

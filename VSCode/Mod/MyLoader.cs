@@ -1,9 +1,4 @@
 ﻿using System;
-using FortRise;
-using IL.MonoMod;
-using Microsoft.Xna.Framework;
-using TowerFall;
-using Monocle;
 using MonoMod.Utils;
 
 
@@ -37,9 +32,8 @@ namespace TFModFortRiseAIModule
     {
       var dynData = DynamicData.For(self);
       
-      String Message = "WAITING AI TO CONNECT ...";
+      String Message = "WAITING FOR THE AI PYTHON TO CONNECT ...";
       for (var i = 0; i < (int)(DateTime.Now - creationTime).TotalSeconds; i++) {
-      //for (var i = 0; i < 1000000; i++) {
         if (i % 2 == 0) continue;
         Message += ".";
       }

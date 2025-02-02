@@ -3,24 +3,8 @@ using System.Diagnostics;
 using System.Threading;
 using FortRise;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using Monocle;
 using MonoMod.ModInterop;
-using MonoMod.Utils;
 using TowerFall;
-
-//NAIMod + AI 
-//Level  ok reste playtag code if
-//Loader  ok
-//MainMenu  ok
-//PauseMenu  ok
-//PlayerIndicator  ok
-//RollcallElement  ok
-//TfGame  todo
-//MyVersusRoundResults  TODO : On.TowerFall.Entity.Render doesn't exists
-//modcompilkenobi  ok transferer dans TFModFortRiseAIModule => reste Aimod a supprimer
-//Aimod ok laisse comme ça
-
 
 namespace TFModFortRiseAIModule
 {
@@ -44,10 +28,6 @@ namespace TFModFortRiseAIModule
     public static GameTime gameTime;
     public static Stopwatch gameTimeWatch;
     private static readonly Stopwatch fpsWatch = new Stopwatch();
-
-    //public static PlayerInput[] savedHumanPlayerInput = new PlayerInput[TFGame.Players.Length];
-    //public static int[] nbPlayerType = new int[TFGame.Players.Length];
-    //public static PlayerType[] currentPlayerType = new PlayerType[TFGame.Players.Length];
 
     public static PlayerInput[] savedHumanPlayerInput = new PlayerInput[8];
     public static int[] nbPlayerType = new int[8];
@@ -73,7 +53,6 @@ namespace TFModFortRiseAIModule
     {
 
       MyLevel.Load();
-      //MyLoader.Load();
       MyMainMenu.Load();
       MyMenuInput.Load();
       MyPauseMenu.Load();
@@ -93,7 +72,6 @@ namespace TFModFortRiseAIModule
     {
       TFModFortRiseAIModule.IsModEigthPlayerExists = IsModExists("WiderSetMod");
       MyLevel.Unload();
-      //MyLoader.Unload();
       MyMainMenu.Unload();
       MyMenuInput.Unload();
       MyPauseMenu.Unload();
@@ -140,66 +118,38 @@ namespace TFModFortRiseAIModule
 
     public static void Update(On.TowerFall.TFGame.orig_Update orig, TFGame self)
     {
-      //Logger.Info("Update");
-      //Logger.Info("TFGame.GameLoaded:" + TFGame.GameLoaded);
-      //Logger.Info("isHumanPlayerTypeSaved:" + isHumanPlayerTypeSaved);
-
-
       //////////////////////////////////////
       if (TFGame.GameLoaded && !isHumanPlayerTypeSaved)
       {
-        //Logger.Info("in TFGame.GameLoaded && !isHumanPlayerTypeSaved");
         for (var i = 0; i < TFGame.Players.Length; i++)
-        //for (var i = 0; i < TFGame.PlayerInputs.Length; i++)
         {
-          //Logger.Info("i=" + i);
-          //if (TFGame.PlayerInputs[i] == null) continue;
           if (TFGame.PlayerInputs[i] == null)
           {
             currentPlayerType[i] = PlayerType.None;
-            //Logger.Info("currentPlayerType["+ i+"]" + currentPlayerType[i]);
 
             continue;
           }
           nbPlayerType[i]++;
           currentPlayerType[i] = PlayerType.Human;
           savedHumanPlayerInput[i] = TFGame.PlayerInputs[i];
-            //Logger.Info("currentPlayerType["+ i+"]" + currentPlayerType[i]);
         }
         isHumanPlayerTypeSaved = true;
       }
       //////////////////////////////////////
 
-
-      //Logger.Info("after if");
-
-      //if (NAIMod.NAIModEnabled)
-      //{
-      //Logger.Info("in AIMod.NAIModEnabled");
-
-
       //////////////////////////////////////
       if (NAIMod.NAIModEnabled && TFGame.GameLoaded && !NAIMod.isAgentReady && isHumanPlayerTypeSaved)
       {
-        //Logger.Info("call CreateAgent()");
         NAIMod.CreateAgent(); // TODO //ACTIVATE
       }
       //////////////////////////////////////
 
-
-
-      //}
-      //Logger.Info("after if NAIMOD()");
-
       int fps = 0;
 
       if (isHumanPlayerTypeSaved)
-      //if (AiMod.ModAIEnabled && isHumanPlayerTypeSaved)
       {
-        //Logger.Info("in if AiMod.ModAIEnabled && isHumanPlayerTypeSaved");
         if (AiMod.Config?.fps > 0)
         {
-          //Logger.Info("in if AiMod.Config?.fps > 0");
           fps = AiMod.IsMatchRunning() ? AiMod.Config.fps : 10;
           fpsWatch.Stop();
           long ticks = 10000000L / fps;
@@ -225,7 +175,6 @@ namespace TFModFortRiseAIModule
           AiMod.loggedScreenSize = true;
         }
       }
-      //Logger.Info("before try orig");
 
       try
       {
@@ -235,23 +184,14 @@ namespace TFModFortRiseAIModule
         // because of the second preupdate (this one or the one in MainMenu.Update
         // => Ok corrected with (!AiMod.ModAITraining && !AiMod.AgentConnected)
         if (((!AiMod.ModAITraining && !AiMod.AgentConnected) || AiMod.PreUpdate()))
-        //if (!AiMod.ModAIEnabled || ((!AiMod.ModAITraining && !AiMod.AgentConnected) || AiMod.PreUpdate()))
         {
-          //Logger.Info("if (fps > 0)");
           if (fps > 0)
-          //if (AiMod.ModAIEnabled && fps > 0)
           {
-          Logger.Info("in if (fps > 0)");
-            //Logger.Info(" if (AiMod.ModAIEnabled && fps > 0)");
             orig(self, AiMod.GetGameTime());
           }
           else
           {
-            //Logger.Info("else " + gameTime.TotalGameTime);
-            //Logger.Info("else " + gameTime.ElapsedGameTime);
-            //Logger.Info("else " + gameTime.ToString());
             orig(self, gameTime);
-            //Logger.Info("after");
           }
         }
       }
@@ -268,7 +208,6 @@ namespace TFModFortRiseAIModule
       }
 
       if (AiMod.gameTimeWatch.ElapsedMilliseconds > AiMod.logTimeInterval.TotalMilliseconds)
-      //if (AiMod.ModAIEnabled && AiMod.gameTimeWatch.ElapsedMilliseconds > AiMod.logTimeInterval.TotalMilliseconds)
       {
         AiMod.LogGameTime();
         AiMod.gameTimeWatch.Restart();

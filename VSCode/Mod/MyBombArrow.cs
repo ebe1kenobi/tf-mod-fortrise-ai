@@ -1,6 +1,4 @@
 ﻿using System;
-using FortRise;
-using Microsoft.Xna.Framework;
 using TowerFall;
 using Monocle;
 using MonoMod.Utils;
@@ -13,7 +11,6 @@ namespace TFModFortRiseAIModule {
 
       var dynData = DynamicData.For(ent);
       state.timeLeft = (float)Math.Ceiling(((Alarm)dynData.Get("explodeAlarm")).FramesLeft);
-      //state.timeLeft = (float)Math.Ceiling(ent.explodeAlarm.FramesLeft);
       dynData.Dispose();
       return state;
     }

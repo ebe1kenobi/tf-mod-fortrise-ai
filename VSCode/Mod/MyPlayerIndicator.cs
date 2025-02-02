@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoMod.Utils;
-using TowerFall;
 
 namespace TFModFortRiseAIModule
 {

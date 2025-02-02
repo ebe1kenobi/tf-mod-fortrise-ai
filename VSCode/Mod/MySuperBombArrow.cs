@@ -1,6 +1,4 @@
 ﻿using System;
-using FortRise;
-using Microsoft.Xna.Framework;
 using Monocle;
 using TowerFall;
 using MonoMod.Utils;

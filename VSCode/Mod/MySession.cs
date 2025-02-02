@@ -1,11 +1,5 @@
-﻿using System;
-using FortRise;
-using Microsoft.Xna.Framework;
-using TowerFall;
-
-namespace TFModFortRiseAIModule {
+﻿namespace TFModFortRiseAIModule {
   public class MySession {
-    //Action originalOnLevelLoadFinish;
 
     internal static void Load()
     {
@@ -19,18 +13,9 @@ namespace TFModFortRiseAIModule {
 
     public MySession() { }
 
-    //public static void ctor_patch(MatchSettings matchSettings) {
-    //  orig(self, matchSettings);
-
-    //  //originalOnLevelLoadFinish = Util.GetAction("$original_OnLevelLoadFinish", typeof(Session), this);
-    //}
-
     public static void OnLevelLoadFinish_patch(On.TowerFall.Session.orig_OnLevelLoadFinish orig, global::TowerFall.Session self) {
       orig(self);
-
-      //if (AiMod.ModAIEnabled) {
-        Agents.NotifyLevelLoad(self.CurrentLevel);
-      //}
+      Agents.NotifyLevelLoad(self.CurrentLevel);
     }
   }
 }

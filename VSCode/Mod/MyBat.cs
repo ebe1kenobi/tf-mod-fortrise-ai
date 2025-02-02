@@ -1,6 +1,4 @@
-﻿using FortRise;
-using Microsoft.Xna.Framework;
-using MonoMod.Utils;
+﻿using MonoMod.Utils;
 using TowerFall;
 using static TowerFall.Bat;
 
@@ -12,7 +10,6 @@ namespace TFModFortRiseAIModule {
       var dynData = DynamicData.For(ent);
 
       aiState.type = ConversionTypes.BatTypes.GetB((BatType)dynData.Get("batType"));
-      //aiState.type = ConversionTypes.BatTypes.GetB(ent.batType);
       ExtEntity.SetAiState(ent, aiState);
       dynData.Dispose();
       return aiState;

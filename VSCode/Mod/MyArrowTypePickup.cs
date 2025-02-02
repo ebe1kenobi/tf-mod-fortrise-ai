@@ -1,6 +1,4 @@
 ﻿using Monocle;
-using FortRise;
-using Microsoft.Xna.Framework;
 using TowerFall;
 using MonoMod.Utils;
 
@@ -15,7 +13,6 @@ namespace TFModFortRiseAIModule {
       var state = new StateItem {
         type = Types.Item,
         itemType = "arrow" + dynData.Get("arrowType").ToString()
-        //itemType = "arrow" + item.arrowType.ToString()
       };
       ExtEntity.SetAiState(ent, state);
       dynData.Dispose();

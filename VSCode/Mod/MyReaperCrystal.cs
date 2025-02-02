@@ -1,6 +1,4 @@
-﻿using FortRise;
-using Microsoft.Xna.Framework;
-using TowerFall;
+﻿using TowerFall;
 
 namespace TFModFortRiseAIModule {
   public static class MyReaperCrystal

@@ -80,25 +80,16 @@ namespace TFModFortRiseAIModule {
     }
 
     public static void ParseArgs(string[] args) {
-      Logger.Info("AIMod.ParseArgs");
       ModAIEnabled = true;
       ModAITraining = false;
  
       for (int i = 0; i < args.Length; i++)
       {
-        //if (args[i] == "--noaimod")
-        //{
-        //  ModAIEnabled = false;
-        //}
         if (args[i] == "--aimodtraining")
         {
           ModAITraining = true;
         }
       }
-      //force ModAIEnabled if training on
-      //if (ModAITraining) {
-      //  ModAIEnabled = true;
-      //}
     }
 
     public static void LoadConfigFromPath() {

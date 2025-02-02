@@ -80,40 +80,40 @@ class Towerfall:
       connections.append(self.join(timeout=6000, verbose=self.verbose))
       if 'ai' in agent and agent['ai'] == 'MovementAgent':
         logging.info('MovementAgent')
-        agents.append(MovementAgent(connections[i]))
+        agents.append(MovementAgent(i, connections[i]))
       elif 'ai' in agent and agent['ai'] == 'SimpleAgentLevel1':
         logging.info('SimpleAgentLevel1')
-        agents.append(SimpleAgentLevel1(connections[i]))
+        agents.append(SimpleAgentLevel1(i, connections[i]))
       elif 'ai' in agent and agent['ai'] == 'NoMoveAgent':
         logging.info('NoMoveAgent')
-        agents.append(NoMoveAgent(connections[i]))
+        agents.append(NoMoveAgent(i, connections[i]))
       else:
         logging.info('SimpleAgentLevel0')
-        agents.append(SimpleAgentLevel0(connections[i]))
+        agents.append(SimpleAgentLevel0(i, connections[i]))
       i += 1
 
     ##################################################
     # EAch agent is a thread (game still freeze sometime when playing)
     ##################################################
-    # threads = []
-    # for agent in agents:
-    #   thread = threading.Thread(target=agent.run)
-    #   threads.append(thread)
-    #   thread.start()
+    threads = []
+    for agent in agents:
+      thread = threading.Thread(target=agent.run)
+      threads.append(thread)
+      thread.start()
 
-    # for thread in threads:
-    #   thread.join()
+    for thread in threads:
+      thread.join()
 
     ##################################################
     # To use training comment the thread above and decomment the code below :
     ##################################################
-    while True: #TODO : use thread and each agent read from its connection : each agent -> thread
-      # Read the state of the game then replies with an action.
-      for connection, agent in zip(connections, agents):
-        # logging.info('towerfall.run : connection.read_json')
-        game_state = connection.read_json()
-        # logging.info('towerfall.run : agent.act')
-        agent.act(game_state)    
+    #while True: #TODO : use thread and each agent read from its connection : each agent -> thread
+    #  # Read the state of the game then replies with an action.
+    #  for connection, agent in zip(connections, agents):
+    #    # logging.info('towerfall.run : connection.read_json')
+    #    game_state = connection.read_json()
+    #    # logging.info('towerfall.run : agent.act')
+    #    agent.act(game_state)    
 
   def join(self, timeout: float = 2, verbose: int = 0) -> Connection:
     '''

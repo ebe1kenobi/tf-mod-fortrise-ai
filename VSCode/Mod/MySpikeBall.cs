@@ -1,5 +1,4 @@
-﻿using FortRise;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using TowerFall;
 using MonoMod.Utils;
 

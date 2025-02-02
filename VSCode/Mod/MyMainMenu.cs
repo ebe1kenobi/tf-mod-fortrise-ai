@@ -1,6 +1,4 @@
-﻿using FortRise;
-using Microsoft.Xna.Framework;
-using TowerFall;
+﻿using TowerFall;
 
 
 namespace TFModFortRiseAIModule
@@ -21,15 +19,13 @@ namespace TFModFortRiseAIModule
 
     public static void Update_patch(On.TowerFall.MainMenu.orig_Update orig, global::TowerFall.MainMenu self)
     {
-      //if (AiMod.ModAIEnabled) {
-        if (!AiMod.PreUpdate()) {
-          TFGame.GameLoaded = false;
-          AiMod.AgentConnected = false;
-        } else {
-          TFGame.GameLoaded = true;
-          AiMod.AgentConnected = true;
-        }
-      //}
+      if (!AiMod.PreUpdate()) {
+        TFGame.GameLoaded = false;
+        AiMod.AgentConnected = false;
+      } else {
+        TFGame.GameLoaded = true;
+        AiMod.AgentConnected = true;
+      }
       orig(self);
     }
   }

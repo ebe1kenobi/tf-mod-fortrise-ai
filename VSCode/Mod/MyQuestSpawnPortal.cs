@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using FortRise;
-using Microsoft.Xna.Framework;
 using TowerFall;
 
 namespace TFModFortRiseAIModule {

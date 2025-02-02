@@ -1,7 +1,4 @@
 ﻿using System;
-using Monocle;
-using FortRise;
-using Microsoft.Xna.Framework;
 using TowerFall;
 
 
@@ -11,26 +8,14 @@ namespace TFModFortRiseAIModule {
     internal static void Load()
     {
       On.TowerFall.MenuInput.cctor += cctor_patch;
-      //On.TowerFall.MenuInput.Confirm += Confirm_patch;
-      //On.TowerFall.MenuInput.ConfirmOrStart += ConfirmOrStart_patch;
-      //On.TowerFall.MenuInput.ReplaySkip += ReplaySkip_patch;
-
     }
 
     internal static void Unload()
     {
+      On.TowerFall.MenuInput.cctor -= cctor_patch;
     }
 
     static void cctor_patch(On.TowerFall.MenuInput.orig_cctor orig) {
-      //if (!AiMod.ModAIEnabled)
-      //{
-      //  // Avoid overriding menu inputs created by the mod.
-      //  MenuInput.MenuInputs = new PlayerInput[0];
-      //}
-      //MenuInput.repeatLeftCounter = new Counter(); //Util ? TODO check
-      //MenuInput.repeatRightCounter = new Counter(); //Util ? TODO check
-      //MenuInput.repeatUpCounter = new Counter(); //Util ? TODO check
-      //MenuInput.repeatDownCounter = new Counter(); //Util ? TODO check
     }
 
     public static bool Confirm { //TODO
